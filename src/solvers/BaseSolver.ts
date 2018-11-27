@@ -4,9 +4,9 @@ import { resolve as resolvePath } from 'path';
 import ISolver from './ISolver';
 
 abstract class BaseSolver<T> implements ISolver {
-  abstract filePath: string;
+  protected abstract filePath: string;
 
-  async solve(): Promise<string> {
+  public async solve(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       readFile(resolvePath(__dirname, '../../inputs', this.filePath), null, (err, data) => {
         if (err) {
@@ -24,9 +24,9 @@ abstract class BaseSolver<T> implements ISolver {
     });
   }
 
-  abstract solveInternal(input: T): string;
+  protected abstract solveInternal(input: T): string;
 
-  abstract parseInput(textInput: string): T;
+  protected abstract parseInput(textInput: string): T;
 }
 
 export default BaseSolver;
