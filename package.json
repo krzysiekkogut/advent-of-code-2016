@@ -4,7 +4,10 @@
   "description": "Solutions for Advent of Code 2018 - JavaScript",
   "main": "index.js",
   "scripts": {
+    "lint": "tslint 'src/**/*.ts'",
+    "prebuild": "yarn lint && rimraf dist/",
     "build": "tsc",
+    "prestart": "yarn build",
     "start": "node dist/index.js"
   },
   "repository": {
@@ -26,6 +29,7 @@
   "homepage": "https://github.com/krzysiekkogut/advent-of-code-2018#readme",
   "devDependencies": {
     "@types/node": "^10.12.10",
+    "rimraf": "^2.6.2",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.16.0",
     "tslint-config-standard": "^8.0.1",

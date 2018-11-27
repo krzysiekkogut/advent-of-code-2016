@@ -1,6 +1,7 @@
+// tslint:disable:no-console
+import { performance } from 'perf_hooks';
 import ArgsParser from './ArgsParser';
 import SolverSelector from './SolverSelector';
-import { performance } from 'perf_hooks';
 
 (async () => {
   try {

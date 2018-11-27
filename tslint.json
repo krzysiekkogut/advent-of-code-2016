@@ -1,15 +1,11 @@
 {
   "defaultSeverity": "error",
-  "extends": [
-    "tslint:recommended",
-    "tslint-config-standard",
-    "tslint-config-prettier"
-  ],
+  "extends": ["tslint:recommended", "tslint-config-standard", "tslint-config-prettier"],
   "rulesDirectory": [],
   "rules": {
     "max-line-length": {
       "options": [120]
-    },
+    }
   },
   "jsRules": {
     "max-line-length": {
