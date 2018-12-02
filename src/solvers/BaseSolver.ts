@@ -1,10 +1,13 @@
 import { readFile } from 'fs';
 import { resolve as resolvePath } from 'path';
 
+import PuzzleVariant from '../PuzzleVariant';
 import ISolver from './ISolver';
 
 abstract class BaseSolver<T> implements ISolver {
   protected abstract filePath: string;
+
+  constructor(protected variant: PuzzleVariant = PuzzleVariant.PART_1) {}
 
   public async solve(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
