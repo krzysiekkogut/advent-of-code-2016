@@ -1,5 +1,5 @@
-import PuzzleVariant from '../../PuzzleVariant';
-import BaseSolver from '../BaseSolver';
+import PuzzleVariant from '../PuzzleVariant';
+import BaseSolver from './BaseSolver';
 
 class Solver1 extends BaseSolver<number[]> {
   protected filePath: string = '1.txt';
