@@ -4,24 +4,24 @@ import BaseSolver from './BaseSolver';
 export default class Solver2 extends BaseSolver<string[]> {
   protected filePath: string = '2.txt';
 
-  protected solveInternal(input: string[]): string {
-    if (this.variant === PuzzleVariant.PART_1) {
-      let twos = 0;
-      let threes = 0;
-      input.forEach(code => {
-        const { hasTwo, hasThree } = this.hasMultiple(code);
-        if (hasTwo) {
-          twos++;
-        }
+  protected solvePart1(input: string[]): string {
+    let twos = 0;
+    let threes = 0;
+    input.forEach(code => {
+      const { hasTwo, hasThree } = this.hasMultiple(code);
+      if (hasTwo) {
+        twos++;
+      }
 
-        if (hasThree) {
-          threes++;
-        }
-      });
+      if (hasThree) {
+        threes++;
+      }
+    });
 
-      return (twos * threes).toString();
-    }
+    return (twos * threes).toString();
+  }
 
+  protected solvePart2(input: string[]): string {
     input.sort();
     for (let i = 0; i < input.length - 1; i++) {
       const diff = this.getDiffCount(input[i], input[i + 1]);

@@ -7,7 +7,7 @@ import ISolver from './ISolver';
 abstract class BaseSolver<T> implements ISolver {
   protected abstract filePath: string;
 
-  constructor(protected variant: PuzzleVariant = PuzzleVariant.PART_1) {}
+  constructor(private variant: PuzzleVariant) {}
 
   public async solve(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -17,7 +17,8 @@ abstract class BaseSolver<T> implements ISolver {
         } else {
           try {
             const parsedInput = this.parseInput(data.toString());
-            const result = this.solveInternal(parsedInput);
+            const result =
+              this.variant === PuzzleVariant.PART_1 ? this.solvePart1(parsedInput) : this.solvePart2(parsedInput);
             resolve(result);
           } catch (error) {
             reject(error.message);
@@ -27,7 +28,8 @@ abstract class BaseSolver<T> implements ISolver {
     });
   }
 
-  protected abstract solveInternal(input: T): string;
+  protected abstract solvePart1(input: T): string;
+  protected abstract solvePart2(input: T): string;
 
   protected abstract parseInput(textInput: string): T;
 }
