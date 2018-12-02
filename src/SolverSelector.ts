@@ -19,6 +19,8 @@ class SolverSelector {
         switch (variant) {
           case PuzzleVariant.PART_1:
             return new Solver2();
+          case PuzzleVariant.PART_2:
+            return new Solver2(variant);
         }
     }
 

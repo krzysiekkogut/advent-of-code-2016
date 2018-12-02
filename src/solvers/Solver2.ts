@@ -1,23 +1,43 @@
+import PuzzleVariant from '../PuzzleVariant';
 import BaseSolver from './BaseSolver';
 
 export default class Solver2 extends BaseSolver<string[]> {
   protected filePath: string = '2.txt';
 
   protected solveInternal(input: string[]): string {
-    let twos = 0;
-    let threes = 0;
-    input.forEach(code => {
-      const { hasTwo, hasThree } = this.hasMultiple(code);
-      if (hasTwo) {
-        twos++;
-      }
+    if (this.variant === PuzzleVariant.PART_1) {
+      let twos = 0;
+      let threes = 0;
+      input.forEach(code => {
+        const { hasTwo, hasThree } = this.hasMultiple(code);
+        if (hasTwo) {
+          twos++;
+        }
 
-      if (hasThree) {
-        threes++;
-      }
-    });
+        if (hasThree) {
+          threes++;
+        }
+      });
 
-    return (twos * threes).toString();
+      return (twos * threes).toString();
+    }
+
+    input.sort();
+    for (let i = 0; i < input.length - 1; i++) {
+      const diff = this.getDiffCount(input[i], input[i + 1]);
+      if (diff === 1) {
+        let result = '';
+
+        for (let j = 0; j < input[i].length; j++) {
+          if (input[i][j] === input[i + 1][j]) {
+            result += input[i][j];
+          }
+        }
+
+        return result;
+      }
+    }
+    return '';
   }
 
   protected parseInput(textInput: string): string[] {
@@ -35,5 +55,16 @@ export default class Solver2 extends BaseSolver<string[]> {
       hasThree: Array.from(map.values()).indexOf(3) >= 0,
       hasTwo: Array.from(map.values()).indexOf(2) >= 0,
     };
+  }
+
+  private getDiffCount(text1: string, text2: string): number {
+    let diff = 0;
+    for (let i = 0; i < text1.length; i++) {
+      if (text1[i] !== text2[i]) {
+        diff++;
+      }
+    }
+
+    return diff;
   }
 }
