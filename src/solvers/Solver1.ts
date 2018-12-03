@@ -1,7 +1,7 @@
-import PuzzleVariant from '../PuzzleVariant';
+import { EOL } from 'os';
 import BaseSolver from './BaseSolver';
 
-class Solver1 extends BaseSolver<number[]> {
+export default class Solver1 extends BaseSolver<number[]> {
   protected filePath: string = '1.txt';
 
   protected solvePart1(input: number[]): string {
@@ -24,8 +24,6 @@ class Solver1 extends BaseSolver<number[]> {
   }
 
   protected parseInput(textInput: string): number[] {
-    return textInput.split('\n').map(x => parseInt(x, 10));
+    return textInput.split(EOL).map(x => parseInt(x, 10));
   }
 }
-
-export default Solver1;

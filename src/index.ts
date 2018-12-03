@@ -19,6 +19,7 @@ import SolverSelector from './SolverSelector';
   } catch (error) {
     console.error(`An error occured. See details below.`);
     console.error(error.message || error);
+    console.log(error);
   } finally {
     console.log('\n======= ADVENT OF CODE 2018 =======');
   }

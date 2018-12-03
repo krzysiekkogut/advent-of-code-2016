@@ -1,4 +1,4 @@
-import PuzzleVariant from '../PuzzleVariant';
+import { EOL } from 'os';
 import BaseSolver from './BaseSolver';
 
 export default class Solver2 extends BaseSolver<string[]> {
@@ -41,7 +41,7 @@ export default class Solver2 extends BaseSolver<string[]> {
   }
 
   protected parseInput(textInput: string): string[] {
-    return textInput.split('\n');
+    return textInput.split(EOL);
   }
 
   private hasMultiple(code: string): { hasTwo: boolean; hasThree: boolean } {
