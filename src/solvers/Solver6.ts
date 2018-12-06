@@ -67,7 +67,27 @@ export default class Solver7 extends BaseSolver<IPoint[]> {
   }
 
   protected solvePart2(input: IPoint[]): string {
-    throw new Error('Method not implemented.');
+    const ROWS = Math.max(...input.map(p => p.y)) + 1;
+    const COLS = Math.max(...input.map(p => p.x)) + 1;
+    const grid = new Array<number[]>(ROWS);
+    for (let i = 0; i < ROWS; i++) {
+      grid[i] = new Array(COLS).fill(0);
+    }
+
+    let counter = 0;
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        input.forEach(({ x, y }) => {
+          const distance = Math.abs(x - c) + Math.abs(y - r);
+          grid[r][c] += distance;
+        });
+        if (grid[r][c] < 10000) {
+          counter++;
+        }
+      }
+    }
+
+    return counter.toString();
   }
 
   protected parseInput(textInput: string): IPoint[] {
