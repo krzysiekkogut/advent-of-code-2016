@@ -9,18 +9,15 @@ export default class Solver1 extends BaseSolver<number[]> {
   }
 
   protected solvePart2(input: number[]): string {
-    let i = 0;
-    let currentFreq = 0;
-    const frequencies = new Map<number, boolean>([[currentFreq, true]]);
-    while (true) {
-      currentFreq += input[i];
-      if (frequencies.get(currentFreq)) {
-        return currentFreq.toString();
-      }
+    const frequencies = new Map<number, boolean>();
 
+    let currentFreq = 0;
+    for (let i = 0; !frequencies.get(currentFreq); i = (i + 1) % input.length) {
       frequencies.set(currentFreq, true);
-      i = (i + 1) % input.length;
+      currentFreq += input[i];
     }
+
+    return currentFreq.toString();
   }
 
   protected parseInput(textInput: string): number[] {

@@ -59,6 +59,7 @@ export default class Solver3 extends BaseSolver<IClaim[]> {
         resultId = id;
       }
     });
+
     return resultId.toString();
   }
 

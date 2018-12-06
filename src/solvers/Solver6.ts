@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import BaseSolver from './BaseSolver';
 
 interface IPoint {
@@ -91,7 +92,7 @@ export default class Solver7 extends BaseSolver<IPoint[]> {
   }
 
   protected parseInput(textInput: string): IPoint[] {
-    return textInput.split('\n').map((coords, index) => ({
+    return textInput.split(EOL).map((coords, index) => ({
       id: index,
       x: parseInt(coords.split(',')[0].trim(), 10),
       y: parseInt(coords.split(',')[1].trim(), 10),

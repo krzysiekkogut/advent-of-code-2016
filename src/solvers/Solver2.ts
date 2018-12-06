@@ -9,13 +9,8 @@ export default class Solver2 extends BaseSolver<string[]> {
     let threes = 0;
     input.forEach(code => {
       const { hasTwo, hasThree } = this.hasMultiple(code);
-      if (hasTwo) {
-        twos++;
-      }
-
-      if (hasThree) {
-        threes++;
-      }
+      twos += hasTwo ? 1 : 0;
+      threes += hasThree ? 1 : 0;
     });
 
     return (twos * threes).toString();
@@ -37,7 +32,8 @@ export default class Solver2 extends BaseSolver<string[]> {
         return result;
       }
     }
-    return '';
+
+    throw new Error('Bad input data.');
   }
 
   protected parseInput(textInput: string): string[] {

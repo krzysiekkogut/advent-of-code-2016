@@ -12,9 +12,7 @@ export default class Solver5 extends BaseSolver<string> {
     for (let char = 'a'.charCodeAt(0); char <= 'z'.charCodeAt(0); char++) {
       const regExp = new RegExp(String.fromCharCode(char), 'ig');
       const polymerLength = this.reducePolymer(input.replace(regExp, '')).length;
-      if (polymerLength < minPolymerLength) {
-        minPolymerLength = polymerLength;
-      }
+      minPolymerLength = Math.min(polymerLength, minPolymerLength);
     }
 
     return minPolymerLength.toString();

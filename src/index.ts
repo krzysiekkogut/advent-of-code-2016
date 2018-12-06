@@ -1,11 +1,12 @@
 // tslint:disable:no-console
+import { EOL } from 'os';
 import { performance } from 'perf_hooks';
 import ArgsParser from './ArgsParser';
 import SolverSelector from './SolverSelector';
 
 (async () => {
   try {
-    console.log('\n======= ADVENT OF CODE 2018 =======\n');
+    console.log(`${EOL}======= ADVENT OF CODE 2018 =======${EOL}`);
     const { day, variant } = ArgsParser.parse(process.argv);
     const solver = SolverSelector.select(day, variant);
 
@@ -21,6 +22,6 @@ import SolverSelector from './SolverSelector';
     console.error(error.message || error);
     console.log(error);
   } finally {
-    console.log('\n======= ADVENT OF CODE 2018 =======');
+    console.log(`${EOL}======= ADVENT OF CODE 2018 =======`);
   }
 })();
