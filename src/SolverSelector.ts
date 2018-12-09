@@ -8,6 +8,7 @@ import Solver4 from './solvers/Solver4';
 import Solver5 from './solvers/Solver5';
 import Solver6 from './solvers/Solver6';
 import Solver8 from './solvers/Solver8';
+import Solver9 from './solvers/Solver9';
 
 class SolverSelector {
   public static select(day: number, variant: PuzzleVariant): ISolver {
@@ -26,6 +27,8 @@ class SolverSelector {
         return new Solver6(variant);
       case 8:
         return new Solver8(variant);
+      case 9:
+        return new Solver9(variant);
     }
 
     throw new Error('Solution not implemented yet.');
