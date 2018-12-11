@@ -6,13 +6,13 @@ export default class Solver11 extends BaseSolver<number> {
   private GRID_SIZE = 300;
 
   protected solvePart1(input: number): string {
-    const grid = this.createGrid(input);
+    const { grid, summedGrid } = this.createGrid(input);
     let maxPower = -Infinity;
     let maxPowerCoords = { y: 0, x: 0 };
     const SQUARE_SIZE = 3;
     for (let y = 1; y <= this.GRID_SIZE - SQUARE_SIZE + 1; y++) {
       for (let x = 1; x < this.GRID_SIZE - SQUARE_SIZE + 1; x++) {
-        const power = this.calculatePower(grid, y, x, SQUARE_SIZE);
+        const power = this.calculatePower(grid, summedGrid, y, x, y + SQUARE_SIZE - 1, x + SQUARE_SIZE - 1);
         if (power > maxPower) {
           maxPower = power;
           maxPowerCoords = { y, x };
@@ -24,13 +24,13 @@ export default class Solver11 extends BaseSolver<number> {
   }
 
   protected solvePart2(input: number): string {
-    const grid = this.createGrid(input);
+    const { grid, summedGrid } = this.createGrid(input);
     let maxPower = -Infinity;
     let maxPowerCoords = { y: 0, x: 0, size: 0 };
     for (let size = 1; size <= this.GRID_SIZE; size++) {
       for (let y = 1; y <= this.GRID_SIZE - size + 1; y++) {
         for (let x = 1; x < this.GRID_SIZE - size + 1; x++) {
-          const power = this.calculatePower(grid, y, x, size);
+          const power = this.calculatePower(grid, summedGrid, y, x, y + size - 1, x + size - 1);
           if (power > maxPower) {
             maxPower = power;
             maxPowerCoords = { y, x, size };
@@ -46,10 +46,12 @@ export default class Solver11 extends BaseSolver<number> {
     return parseInt(textInput, 10);
   }
 
-  private createGrid(serialNumber: number): number[][] {
+  private createGrid(serialNumber: number): { grid: number[][]; summedGrid: number[][] } {
     const grid: number[][] = new Array<number[]>(this.GRID_SIZE + 1);
+    const summedGrid: number[][] = new Array<number[]>(this.GRID_SIZE + 1);
     for (let i = 0; i < grid.length; i++) {
-      grid[i] = new Array<number>(this.GRID_SIZE + 1);
+      grid[i] = new Array<number>(this.GRID_SIZE + 1).fill(0);
+      summedGrid[i] = new Array<number>(this.GRID_SIZE + 1).fill(0);
     }
 
     for (let y = 1; y <= this.GRID_SIZE; y++) {
@@ -64,17 +66,28 @@ export default class Solver11 extends BaseSolver<number> {
       }
     }
 
-    return grid;
-  }
-
-  private calculatePower(grid: number[][], top: number, left: number, squareSize: number): number {
-    let result = 0;
-    for (let y = 0; y < squareSize; y++) {
-      for (let x = 0; x < squareSize; x++) {
-        result += grid[top + y][left + x];
+    for (let y = 1; y <= this.GRID_SIZE; y++) {
+      for (let x = 1; x <= this.GRID_SIZE; x++) {
+        summedGrid[y][x] = grid[y][x] + summedGrid[y - 1][x] + summedGrid[y][x - 1] - summedGrid[y - 1][x - 1];
       }
     }
 
-    return result;
+    return { grid, summedGrid };
+  }
+
+  private calculatePower(
+    grid: number[][],
+    summedGrid: number[][],
+    top: number,
+    left: number,
+    bottom: number,
+    right: number
+  ): number {
+    return (
+      summedGrid[bottom][right] -
+      summedGrid[bottom][left - 1] -
+      summedGrid[top - 1][right] +
+      summedGrid[top - 1][left - 1]
+    );
   }
 }
