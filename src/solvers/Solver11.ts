@@ -12,7 +12,7 @@ export default class Solver11 extends BaseSolver<number> {
     const SQUARE_SIZE = 3;
     for (let y = 1; y <= this.GRID_SIZE - SQUARE_SIZE + 1; y++) {
       for (let x = 1; x < this.GRID_SIZE - SQUARE_SIZE + 1; x++) {
-        const power = this.calculatePower(grid, summedGrid, y, x, y + SQUARE_SIZE - 1, x + SQUARE_SIZE - 1);
+        const power = this.calculatePower(grid, summedGrid, y - 1, x - 1, y + SQUARE_SIZE - 1, x + SQUARE_SIZE - 1);
         if (power > maxPower) {
           maxPower = power;
           maxPowerCoords = { y, x };
@@ -30,7 +30,7 @@ export default class Solver11 extends BaseSolver<number> {
     for (let size = 1; size <= this.GRID_SIZE; size++) {
       for (let y = 1; y <= this.GRID_SIZE - size + 1; y++) {
         for (let x = 1; x < this.GRID_SIZE - size + 1; x++) {
-          const power = this.calculatePower(grid, summedGrid, y, x, y + size - 1, x + size - 1);
+          const power = this.calculatePower(grid, summedGrid, y - 1, x - 1, y + size - 1, x + size - 1);
           if (power > maxPower) {
             maxPower = power;
             maxPowerCoords = { y, x, size };
@@ -85,9 +85,9 @@ export default class Solver11 extends BaseSolver<number> {
   ): number {
     return (
       summedGrid[bottom][right] -
-      summedGrid[bottom][left - 1] -
-      summedGrid[top - 1][right] +
-      summedGrid[top - 1][left - 1]
+      summedGrid[bottom][left] -
+      summedGrid[top][right] +
+      summedGrid[top][left]
     );
   }
 }
