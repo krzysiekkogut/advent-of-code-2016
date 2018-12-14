@@ -6,7 +6,7 @@ type Track = '-' | '|' | '/' | '\\' | '+' | ' ';
 
 interface ITrack {
   type: Track;
-  isCartHere: boolean;
+  cart?: ICart;
 }
 
 interface ICart {
@@ -26,10 +26,8 @@ export default class Solver13 extends BaseSolver<IMap> {
   protected filePath: string = '13.txt';
 
   protected solvePart1(input: IMap): string {
-    let i = 0;
     while (true) {
       const colision = this.moveCarts(input);
-      i++;
       if (colision) {
         return `${colision.x},${colision.y}`;
       }
@@ -37,13 +35,18 @@ export default class Solver13 extends BaseSolver<IMap> {
   }
 
   protected solvePart2(input: IMap): string {
-    throw new Error('Method not implemented.');
+    while (input.carts.length > 1) {
+      this.moveCarts(input, true);
+    }
+
+    return `${input.carts[0].x},${input.carts[0].y}`;
   }
 
   protected parseInput(textInput: string): IMap {
     const lines = textInput.split(EOL).filter(line => line !== '');
     const tracks = new Array<ITrack[]>(lines.length);
     const carts: ICart[] = [];
+    let cart: ICart;
     let id = 0;
     for (let y = 0; y < tracks.length; y++) {
       tracks[y] = new Array<ITrack>(lines[y].length);
@@ -51,21 +54,23 @@ export default class Solver13 extends BaseSolver<IMap> {
         switch (lines[y][x]) {
           case '>':
           case '<':
-            tracks[y][x] = { type: '-', isCartHere: true };
-            carts.push({ direction: lines[y][x] as Direction, id, junctionsCount: 0, x, y });
+            cart = { direction: lines[y][x] as Direction, id, junctionsCount: 0, x, y };
+            tracks[y][x] = { type: '-', cart };
+            carts.push(cart);
             id++;
             break;
           case 'v':
           case '^':
-            tracks[y][x] = { type: '|', isCartHere: true };
-            carts.push({ direction: lines[y][x] as Direction, id, junctionsCount: 0, x, y });
+            cart = { direction: lines[y][x] as Direction, id, junctionsCount: 0, x, y };
+            tracks[y][x] = { type: '|', cart };
+            carts.push(cart);
             id++;
             break;
           case '+':
-            tracks[y][x] = { type: lines[y][x] as Track, isCartHere: false };
+            tracks[y][x] = { type: lines[y][x] as Track };
             break;
           default:
-            tracks[y][x] = { type: lines[y][x] as Track, isCartHere: false };
+            tracks[y][x] = { type: lines[y][x] as Track };
             break;
         }
       }
@@ -74,7 +79,10 @@ export default class Solver13 extends BaseSolver<IMap> {
     return { carts, tracks };
   }
 
-  private moveCarts(map: IMap): { x: number; y: number } | null {
+  private moveCarts(
+    map: IMap,
+    continueAfterColision = false
+  ): { x: number; y: number; cart1: ICart; cart2: ICart } | null {
     for (const cart of map.carts) {
       let newX = cart.x;
       let newY = cart.y;
@@ -204,15 +212,20 @@ export default class Solver13 extends BaseSolver<IMap> {
           break;
       }
 
-      if (map.tracks[newY][newX].isCartHere) {
-        return { x: newX, y: newY };
+      map.tracks[cart.y][cart.x].cart = undefined;
+      if (map.tracks[newY][newX].cart) {
+        const colision = { x: newX, y: newY, cart1: cart, cart2: map.tracks[newY][newX].cart! };
+        map.tracks[newY][newX].cart = undefined;
+        map.carts = map.carts.filter(c => c !== colision.cart1 && c !== colision.cart2);
+        if (!continueAfterColision) {
+          return colision;
+        }
+      } else {
+        map.tracks[newY][newX].cart = cart;
+        cart.direction = newDirection;
+        cart.x = newX;
+        cart.y = newY;
       }
-
-      map.tracks[cart.y][cart.x].isCartHere = false;
-      map.tracks[newY][newX].isCartHere = true;
-      cart.direction = newDirection;
-      cart.x = newX;
-      cart.y = newY;
     }
 
     return null;
