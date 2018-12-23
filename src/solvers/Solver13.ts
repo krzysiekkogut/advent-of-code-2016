@@ -15,6 +15,7 @@ interface ICart {
   direction: Direction;
   id: number;
   junctionsCount: number;
+  alive: boolean;
 }
 
 interface IMap {
@@ -28,6 +29,7 @@ export default class Solver13 extends BaseSolver<IMap> {
   protected solvePart1(input: IMap): string {
     while (true) {
       const colision = this.moveCarts(input);
+      input.carts.sort((cart1, cart2) => (cart1.y < cart2.y ? -1 : cart1.y > cart2.y ? 1 : cart1.x < cart2.x ? -1 : 1));
       if (colision) {
         return `${colision.x},${colision.y}`;
       }
@@ -37,9 +39,12 @@ export default class Solver13 extends BaseSolver<IMap> {
   protected solvePart2(input: IMap): string {
     while (input.carts.length > 1) {
       this.moveCarts(input, true);
+      input.carts = input.carts.filter(c => c.alive);
+      input.carts.sort((cart1, cart2) => (cart1.y < cart2.y ? -1 : cart1.y > cart2.y ? 1 : cart1.x < cart2.x ? -1 : 1));
     }
 
-    return `${input.carts[0].x},${input.carts[0].y}`;
+    const outstandingCart = input.carts[0];
+    return `${outstandingCart.x},${outstandingCart.y}`;
   }
 
   protected parseInput(textInput: string): IMap {
@@ -54,14 +59,14 @@ export default class Solver13 extends BaseSolver<IMap> {
         switch (lines[y][x]) {
           case '>':
           case '<':
-            cart = { direction: lines[y][x] as Direction, id, junctionsCount: 0, x, y };
+            cart = { direction: lines[y][x] as Direction, id, junctionsCount: 0, x, y, alive: true };
             tracks[y][x] = { type: '-', cart };
             carts.push(cart);
             id++;
             break;
           case 'v':
           case '^':
-            cart = { direction: lines[y][x] as Direction, id, junctionsCount: 0, x, y };
+            cart = { direction: lines[y][x] as Direction, id, junctionsCount: 0, x, y, alive: true };
             tracks[y][x] = { type: '|', cart };
             carts.push(cart);
             id++;
@@ -84,147 +89,149 @@ export default class Solver13 extends BaseSolver<IMap> {
     continueAfterColision = false
   ): { x: number; y: number; cart1: ICart; cart2: ICart } | null {
     for (const cart of map.carts) {
-      let newX = cart.x;
-      let newY = cart.y;
-      let newDirection: Direction = cart.direction;
-      switch (map.tracks[cart.y][cart.x].type) {
-        case '-':
-          switch (cart.direction) {
-            case '>':
-              newX++;
-              break;
-            case '<':
-              newX--;
-              break;
-          }
-          break;
-        case '|':
-          switch (cart.direction) {
-            case '^':
-              newY--;
-              break;
-            case 'v':
-              newY++;
-              break;
-          }
-          break;
-        case '/':
-          switch (cart.direction) {
-            case '>':
-              newDirection = '^';
-              newY--;
-              break;
-            case '<':
-              newDirection = 'v';
-              newY++;
-              break;
-            case '^':
-              newDirection = '>';
-              newX++;
-              break;
-            case 'v':
-              newDirection = '<';
-              newX--;
-              break;
-          }
-          break;
-        case '\\':
-          switch (cart.direction) {
-            case '>':
-              newDirection = 'v';
-              newY++;
-              break;
-            case '<':
-              newDirection = '^';
-              newY--;
-              break;
-            case '^':
-              newDirection = '<';
-              newX--;
-              break;
-            case 'v':
-              newDirection = '>';
-              newX++;
-              break;
-          }
-          break;
-        case '+':
-          const count = cart.junctionsCount % 3;
-          cart.junctionsCount++;
-          switch (count) {
-            case 0: // left
-              switch (cart.direction) {
-                case '<':
-                  newDirection = 'v';
-                  newY++;
-                  break;
-                case '>':
-                  newDirection = '^';
-                  newY--;
-                  break;
-                case '^':
-                  newDirection = '<';
-                  newX--;
-                  break;
-                case 'v':
-                  newDirection = '>';
-                  newX++;
-                  break;
-              }
-              break;
-            case 1: // straight
-              switch (cart.direction) {
-                case '<':
-                  newX--;
-                  break;
-                case '>':
-                  newX++;
-                  break;
-                case '^':
-                  newY--;
-                  break;
-                case 'v':
-                  newY++;
-                  break;
-              }
-              break;
-            case 2: // right
-              switch (cart.direction) {
-                case '<':
-                  newDirection = '^';
-                  newY--;
-                  break;
-                case '>':
-                  newDirection = 'v';
-                  newY++;
-                  break;
-                case '^':
-                  newDirection = '>';
-                  newX++;
-                  break;
-                case 'v':
-                  newDirection = '<';
-                  newX--;
-                  break;
-              }
-              break;
-          }
-          break;
-      }
-
-      map.tracks[cart.y][cart.x].cart = undefined;
-      if (map.tracks[newY][newX].cart) {
-        const colision = { x: newX, y: newY, cart1: cart, cart2: map.tracks[newY][newX].cart! };
-        map.tracks[newY][newX].cart = undefined;
-        map.carts = map.carts.filter(c => c !== colision.cart1 && c !== colision.cart2);
-        if (!continueAfterColision) {
-          return colision;
+      if (cart.alive) {
+        let newX = cart.x;
+        let newY = cart.y;
+        let newDirection: Direction = cart.direction;
+        switch (map.tracks[cart.y][cart.x].type) {
+          case '-':
+            switch (cart.direction) {
+              case '>':
+                newX++;
+                break;
+              case '<':
+                newX--;
+                break;
+            }
+            break;
+          case '|':
+            switch (cart.direction) {
+              case '^':
+                newY--;
+                break;
+              case 'v':
+                newY++;
+                break;
+            }
+            break;
+          case '/':
+            switch (cart.direction) {
+              case '>':
+                newDirection = '^';
+                newY--;
+                break;
+              case '<':
+                newDirection = 'v';
+                newY++;
+                break;
+              case '^':
+                newDirection = '>';
+                newX++;
+                break;
+              case 'v':
+                newDirection = '<';
+                newX--;
+                break;
+            }
+            break;
+          case '\\':
+            switch (cart.direction) {
+              case '>':
+                newDirection = 'v';
+                newY++;
+                break;
+              case '<':
+                newDirection = '^';
+                newY--;
+                break;
+              case '^':
+                newDirection = '<';
+                newX--;
+                break;
+              case 'v':
+                newDirection = '>';
+                newX++;
+                break;
+            }
+            break;
+          case '+':
+            const count = cart.junctionsCount % 3;
+            cart.junctionsCount++;
+            switch (count) {
+              case 0: // left
+                switch (cart.direction) {
+                  case '<':
+                    newDirection = 'v';
+                    newY++;
+                    break;
+                  case '>':
+                    newDirection = '^';
+                    newY--;
+                    break;
+                  case '^':
+                    newDirection = '<';
+                    newX--;
+                    break;
+                  case 'v':
+                    newDirection = '>';
+                    newX++;
+                    break;
+                }
+                break;
+              case 1: // straight
+                switch (cart.direction) {
+                  case '<':
+                    newX--;
+                    break;
+                  case '>':
+                    newX++;
+                    break;
+                  case '^':
+                    newY--;
+                    break;
+                  case 'v':
+                    newY++;
+                    break;
+                }
+                break;
+              case 2: // right
+                switch (cart.direction) {
+                  case '<':
+                    newDirection = '^';
+                    newY--;
+                    break;
+                  case '>':
+                    newDirection = 'v';
+                    newY++;
+                    break;
+                  case '^':
+                    newDirection = '>';
+                    newX++;
+                    break;
+                  case 'v':
+                    newDirection = '<';
+                    newX--;
+                    break;
+                }
+                break;
+            }
+            break;
         }
-      } else {
-        map.tracks[newY][newX].cart = cart;
-        cart.direction = newDirection;
-        cart.x = newX;
-        cart.y = newY;
+
+        map.tracks[cart.y][cart.x].cart = undefined;
+        if (map.tracks[newY][newX].cart) {
+          const colision = { x: newX, y: newY, cart1: cart, cart2: map.tracks[newY][newX].cart! };
+          map.tracks[newY][newX].cart = undefined;
+          colision.cart1.alive = colision.cart2.alive = false;
+          if (!continueAfterColision) {
+            return colision;
+          }
+        } else {
+          map.tracks[newY][newX].cart = cart;
+          cart.direction = newDirection;
+          cart.x = newX;
+          cart.y = newY;
+        }
       }
     }
 
