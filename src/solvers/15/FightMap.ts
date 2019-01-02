@@ -34,11 +34,36 @@ export default class FightMap {
       });
   }
 
-  public get isFight(): boolean {
+  public get startNextRound(): boolean {
     const units = this.getAllUnits();
     const areAnyElfs = units.some(u => u.unitType === 'E');
     const areAnyGoblins = units.some(u => u.unitType === 'G');
     return areAnyElfs && areAnyGoblins;
+  }
+
+  public get ROWS(): number {
+    return this.mapData.length;
+  }
+
+  public get COLS(): number {
+    return this.mapData[0].length;
+  }
+
+  public print() {
+    // tslint:disable:no-console
+    console.log(`\nRound: ${this.noOfFinishedRounds}`);
+    this.mapData.forEach(l => {
+      const line = l
+        .map(f => {
+          if (f.unit && f.unit.hitPoints > 0) {
+            return f.unit.unitType;
+          }
+
+          return f.isCavern ? '.' : '#';
+        })
+        .join('');
+      console.log(line);
+    });
   }
 
   public get(row: number, col: number): Field | null {

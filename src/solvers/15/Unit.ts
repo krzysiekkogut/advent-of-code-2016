@@ -1,6 +1,5 @@
 import Field from './Field';
 import FightMap from './FightMap';
-import NoEnemiesError from './NoEnemiesError';
 
 type UnitType = 'E' | 'G';
 
@@ -14,94 +13,84 @@ export default class Unit {
 
   constructor(private map: FightMap, public unitType: UnitType, public row: number, public col: number) {}
 
-  public move(): void {
-    const fields = this.getAdjacentFields(this.map.get(this.row, this.col)!);
-    if (fields.some(f => !!f.unit)) return;
+  public get field(): Field {
+    return this.map.get(this.row, this.col)!;
+  }
 
-    const enemies = this.map.getAllUnits().filter(unit => unit.unitType !== this.unitType && unit.hitPoints > 0);
+  public move(): boolean {
+    const enemies = this.map.getAllUnits().filter(unit => unit.unitType !== this.unitType);
     if (enemies.length === 0) {
-      throw new NoEnemiesError();
+      return false;
     }
 
-    const currentField = this.map.get(this.row, this.col)!;
-    const path: Field[] = this.getAllPathsToTargets(currentField);
-
-    const nextStep: Field = path[0];
-    // .sort((pathA, pathB) => {
-    //   // sort by path target
-    //   const targetA = pathA[pathA.length - 1];
-    //   const targetB = pathB[pathB.length - 1];
-
-    //   if (targetA === targetB) return 0;
-    //   if (targetA.row < targetB.row) return -1;
-    //   if (targetA.row > targetB.row) return 1;
-    //   return targetA.col < targetB.col ? -1 : 1;
-    // })
-    // .filter((path, index, allPaths) => {
-    //   // get paths to first target
-    //   const target = allPaths[0][allPaths[0].length - 1];
-    //   const pathTarget = path[path.length - 1];
-    //   return target === pathTarget;
-    // })
-    // .map(path => path[0]) // get first steps
-    // .sort((fieldA, fieldB) => (fieldA.row < fieldB.row ? -1 : fieldA.col < fieldB.col ? -1 : 1))[0];
-
-    currentField.unit = null;
+    const nextStep: Field = this.getNextStep(this.field);
+    this.field.unit = null;
     nextStep.unit = this;
+    this.row = nextStep.row;
+    this.col = nextStep.col;
+    return true;
   }
 
   public attack(): void {
-    const fields = this.getAdjacentFields(this.map.get(this.row, this.col)!);
-    for (const field of fields) {
-      if (field.unit) {
-        return this.attackUnitOnField(field, field.unit!);
-      }
+    const target = this.getAdjacentFields(this.field).find(f => !!f.unit && f.unit.unitType !== this.unitType);
+    if (target) {
+      target.unit!.hitPoints -= this.attackPower;
+    }
+
+    if (target && target.unit!.hitPoints <= 0) {
+      target.unit = null;
     }
   }
 
   private getAdjacentFields(field: Field): Field[] {
-    const up = this.map.get(this.row - 1, this.col);
-    const left = this.map.get(this.row, this.col - 1);
-    const right = this.map.get(this.row, this.col + 1);
-    const down = this.map.get(this.row + 1, this.col);
+    const up = this.map.get(field.row - 1, field.col);
+    const left = this.map.get(field.row, field.col - 1);
+    const right = this.map.get(field.row, field.col + 1);
+    const down = this.map.get(field.row + 1, field.col);
 
-    return [up, left, right, down].filter(f => !!f) as Field[];
+    return [up, left, right, down].filter(f => f && f.isCavern) as Field[];
   }
 
-  private getAllPathsToTargets(start: Field): Field[] {
-    const queue: IGraphField[] = [{ field: start, parent: null }];
-
-    let target = null;
-
-    while (queue.length > 0 && target === null) {
-      const currentBFS = queue.shift()!;
-      if (this.isFieldInRange(currentBFS.field)) {
-        target = currentBFS;
-      }
-
-      const nextFields = this.getAdjacentFields(currentBFS.field).map(field => ({ field, parent: currentBFS }));
-      queue.push(...nextFields);
+  private getNextStep(start: Field): Field {
+    const visited = new Array(this.map.ROWS);
+    for (let i = 0; i < visited.length; i++) {
+      visited[i] = new Array(this.map.COLS).fill(false);
     }
 
-    const path = [target!.field];
-    let curr = target!.parent;
+    let target = null;
+    const queue: IGraphField[] = [{ field: start, parent: null }];
+    while (queue.length > 0 && target === null) {
+      const currentNode = queue.shift()!;
+      if (!visited[currentNode.field.row][currentNode.field.col]) {
+        visited[currentNode.field.row][currentNode.field.col] = true;
+
+        if (this.isFieldInRange(currentNode.field)) {
+          target = currentNode;
+        }
+
+        const nextFields = this.getAdjacentFields(currentNode.field)
+          .filter(f => !f.unit)
+          .map(field => ({ field, parent: currentNode }));
+        queue.push(...nextFields);
+      }
+    }
+
+    if (target === null || target.field === start) {
+      return start;
+    }
+
+    const path = [];
+    let curr: IGraphField | null = target;
     while (curr) {
       path.push(curr.field);
       curr = curr.parent;
     }
 
-    return path.reverse();
+    return path.reverse()[1];
   }
 
   private isFieldInRange(field: Field): boolean {
     const fields = this.getAdjacentFields(field);
     return fields.some(f => !!f.unit && f.unit.unitType !== this.unitType);
-  }
-
-  private attackUnitOnField(field: Field, unit: Unit): void {
-    unit.hitPoints -= this.attackPower;
-    if (unit.hitPoints <= 0) {
-      field.unit = null;
-    }
   }
 }

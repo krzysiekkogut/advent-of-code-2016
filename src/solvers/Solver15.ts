@@ -1,31 +1,29 @@
 import FightMap from './15/FightMap';
-import NoEnemiesError from './15/NoEnemiesError';
 import BaseSolver from './BaseSolver';
 
 export default class Solver15 extends BaseSolver<FightMap> {
-  protected filePath = '15.txt';
+  protected filePath = '15.ex.txt';
 
   protected solvePart1(map: FightMap): string {
-    while (map.isFight) {
+    while (map.startNextRound) {
       const units = map.getAllUnits();
-      let fight = true;
-      for (let i = 0; i < units.length && fight; i++) {
+      for (let i = 0; i < units.length; i++) {
         const unit = units[i];
         if (unit.hitPoints > 0) {
-          try {
-            unit.move();
-            unit.attack();
-          } catch (error) {
-            if (error instanceof NoEnemiesError) {
-              fight = false;
-            } else throw error;
+          if (!unit.move()) {
+            break;
           }
+          unit.attack();
+        }
+
+        if (i === units.length - 1) {
+          map.noOfFinishedRounds++;
+          map.print();
         }
       }
-
-      map.noOfFinishedRounds++;
     }
 
+    map.print();
     const hpLeft = map
       .getAllUnits()
       .map(u => u.hitPoints)
