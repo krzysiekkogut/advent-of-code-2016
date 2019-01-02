@@ -1,13 +1,12 @@
-type Unit = 'E' | 'G' | 'none';
+import FightMap from './FightMap';
+import Unit from './Unit';
 
 export default class Field {
   constructor(
     public row: number,
     public col: number,
-    public unit: Unit,
+    private map: FightMap,
     public isCavern: boolean,
-    public isWall: boolean,
-    public attackPower: number = 3,
-    public hitPoints: number = 200
+    public unit: Unit | null = null
   ) {}
 }
