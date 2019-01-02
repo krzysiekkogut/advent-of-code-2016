@@ -4,6 +4,10 @@ import NoEnemiesError from './NoEnemiesError';
 
 type UnitType = 'E' | 'G';
 
+interface IGraphField {
+  field: Field;
+  parent: IGraphField | null;
+}
 export default class Unit {
   public attackPower: number = 3;
   public hitPoints: number = 200;
@@ -19,29 +23,28 @@ export default class Unit {
       throw new NoEnemiesError();
     }
 
-    // TODO: find paths to enemies using BFS - stop on shortest distance
     const currentField = this.map.get(this.row, this.col)!;
-    const paths: Field[][] = this.getAllPathsToTargets(currentField);
+    const path: Field[] = this.getAllPathsToTargets(currentField);
 
-    const nextStep: Field = paths
-      .sort((pathA, pathB) => {
-        // sort by path target
-        const targetA = pathA[pathA.length - 1];
-        const targetB = pathB[pathB.length - 1];
+    const nextStep: Field = path[0];
+    // .sort((pathA, pathB) => {
+    //   // sort by path target
+    //   const targetA = pathA[pathA.length - 1];
+    //   const targetB = pathB[pathB.length - 1];
 
-        if (targetA === targetB) return 0;
-        if (targetA.row < targetB.row) return -1;
-        if (targetA.row > targetB.row) return 1;
-        return targetA.col < targetB.col ? -1 : 1;
-      })
-      .filter((path, index, allPaths) => {
-        // get paths to first target
-        const target = allPaths[0][allPaths[0].length - 1];
-        const pathTarget = path[path.length - 1];
-        return target === pathTarget;
-      })
-      .map(path => path[0]) // get first steps
-      .sort((fieldA, fieldB) => (fieldA.row < fieldB.row ? -1 : fieldA.col < fieldB.col ? -1 : 1))[0];
+    //   if (targetA === targetB) return 0;
+    //   if (targetA.row < targetB.row) return -1;
+    //   if (targetA.row > targetB.row) return 1;
+    //   return targetA.col < targetB.col ? -1 : 1;
+    // })
+    // .filter((path, index, allPaths) => {
+    //   // get paths to first target
+    //   const target = allPaths[0][allPaths[0].length - 1];
+    //   const pathTarget = path[path.length - 1];
+    //   return target === pathTarget;
+    // })
+    // .map(path => path[0]) // get first steps
+    // .sort((fieldA, fieldB) => (fieldA.row < fieldB.row ? -1 : fieldA.col < fieldB.col ? -1 : 1))[0];
 
     currentField.unit = null;
     nextStep.unit = this;
@@ -65,10 +68,29 @@ export default class Unit {
     return [up, left, right, down].filter(f => !!f) as Field[];
   }
 
-  private getAllPathsToTargets(start: Field): Field[][] {
-    const queue = [{ field: start, parent: null, distance: 0 }];
+  private getAllPathsToTargets(start: Field): Field[] {
+    const queue: IGraphField[] = [{ field: start, parent: null }];
 
-    // BY GOING ALWAYS IN READING ORDER, WILL THE 1ST PATH BE CORRECT ONE???
+    let target = null;
+
+    while (queue.length > 0 && target === null) {
+      const currentBFS = queue.shift()!;
+      if (this.isFieldInRange(currentBFS.field)) {
+        target = currentBFS;
+      }
+
+      const nextFields = this.getAdjacentFields(currentBFS.field).map(field => ({ field, parent: currentBFS }));
+      queue.push(...nextFields);
+    }
+
+    const path = [target!.field];
+    let curr = target!.parent;
+    while (curr) {
+      path.push(curr.field);
+      curr = curr.parent;
+    }
+
+    return path.reverse();
   }
 
   private isFieldInRange(field: Field): boolean {
