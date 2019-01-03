@@ -25,37 +25,88 @@ interface ISample {
   instructrion: number[];
 }
 
-export default class Solver16 extends BaseSolver<{ samples: ISample[] }> {
+export default class Solver16 extends BaseSolver<{ instructrions: number[][]; samples: ISample[] }> {
   protected filePath = '16.txt';
 
-  protected solvePart1({ samples }: { samples: ISample[] }): string {
-    const operations = this.getAllOperations();
-    let samplesWithAtLeast3MatchesCount = 0;
-    samples.forEach(sample => {
-      let matchingCount = 0;
-      operations.forEach(operation => {
-        const result = operation.calc(
-          sample.before,
-          sample.instructrion[1],
-          sample.instructrion[2],
-          sample.instructrion[3]
-        );
-        if (this.match(result, sample.after)) {
-          matchingCount++;
-        }
-      });
+  protected solvePart1({ samples }: { instructrions: number[][]; samples: ISample[] }): string {
+    const samplesMap = this.getMatchingOperations(samples);
+    return Array.from(samplesMap.values())
+      .map(ops => (ops.length >= 3 ? 1 : (0 as number)))
+      .reduce((prev, curr) => prev + curr, 0)
+      .toString();
+  }
 
-      samplesWithAtLeast3MatchesCount += matchingCount >= 3 ? 1 : 0;
+  protected solvePart2({ instructrions, samples }: { instructrions: number[][]; samples: ISample[] }): string {
+    const samplesMap = this.getMatchingOperations(samples);
+    const opCodes: Array<Set<string>> = new Array(16);
+    for (let i = 0; i < opCodes.length; i++) {
+      opCodes[i] = new Set<string>();
+    }
+
+    samplesMap.forEach((ops, sample) => {
+      const opCode = sample.instructrion[0];
+      ops.forEach(op => opCodes[opCode].add(op));
     });
 
-    return samplesWithAtLeast3MatchesCount.toString();
+    const processed = new Set<string>();
+    while (opCodes.some(s => s.size > 1)) {
+      const set1Index = opCodes.findIndex((s, i) => s.size === 1 && !processed.has(Array.from(opCodes[i].values())[0]));
+      const set1Item = Array.from(opCodes[set1Index].values())[0];
+      for (let i = 0; i < opCodes.length; i++) {
+        if (i !== set1Index) {
+          opCodes[i].delete(set1Item);
+        }
+      }
+      processed.add(set1Item);
+    }
+
+    const operations: Operation[] = opCodes.map(s => {
+      const opName = Array.from(s.values())[0];
+      switch (opName) {
+        case 'Addi':
+          return new Addi();
+        case 'Addr':
+          return new Addr();
+        case 'Bani':
+          return new Bani();
+        case 'Banr':
+          return new Banr();
+        case 'Bori':
+          return new Bori();
+        case 'Borr':
+          return new Borr();
+        case 'Eqir':
+          return new Eqir();
+        case 'Eqri':
+          return new Eqri();
+        case 'Eqrr':
+          return new Eqrr();
+        case 'Gtir':
+          return new Gtir();
+        case 'Gtri':
+          return new Gtri();
+        case 'Gtrr':
+          return new Gtrr();
+        case 'Muli':
+          return new Muli();
+        case 'Mulr':
+          return new Mulr();
+        case 'Seti':
+          return new Seti();
+        case 'Setr':
+          return new Setr();
+        default:
+          throw new Error('Incorrect input.');
+      }
+    });
+
+    let registers = [0, 0, 0, 0];
+    registers = this.runProgram(registers, instructrions, operations);
+
+    return registers[0].toString();
   }
 
-  protected solvePart2(input: { samples: ISample[] }): string {
-    throw new Error('Method not implemented.');
-  }
-
-  protected parseInput(textInput: string): { samples: ISample[] } {
+  protected parseInput(textInput: string): { instructrions: number[][]; samples: ISample[] } {
     const lines = textInput
       .split(EOL)
       .map(l => l.trim())
@@ -64,8 +115,8 @@ export default class Solver16 extends BaseSolver<{ samples: ISample[] }> {
       const line = lines[i];
       if (line.startsWith('After')) {
         return {
+          instructrions: this.parseInstructrions(lines.slice(i + 1)),
           samples: this.parseSamples(lines.slice(0, i + 1)),
-          // others: this.parseOthers(lines.slice(i + 1))
         };
       }
     }
@@ -93,6 +144,34 @@ export default class Solver16 extends BaseSolver<{ samples: ISample[] }> {
     return samples;
   }
 
+  private parseInstructrions(lines: string[]): number[][] {
+    return lines.map(line => line.split(' ').map(n => parseInt(n.trim(), 10)));
+  }
+
+  private getMatchingOperations(samples: ISample[]): Map<ISample, string[]> {
+    const operations = this.getAllOperations();
+    const samplesMap = new Map<ISample, string[]>();
+    samples.forEach(sample => {
+      const matchingOperations: string[] = [];
+      operations.forEach(operation => {
+        const result = operation.calc(
+          sample.before,
+          sample.instructrion[1],
+          sample.instructrion[2],
+          sample.instructrion[3]
+        );
+
+        if (this.match(result, sample.after)) {
+          matchingOperations.push(operation.constructor.name);
+        }
+      });
+
+      samplesMap.set(sample, matchingOperations);
+    });
+
+    return samplesMap;
+  }
+
   private getAllOperations(): Operation[] {
     return [
       new Addr(),
@@ -116,5 +195,13 @@ export default class Solver16 extends BaseSolver<{ samples: ISample[] }> {
 
   private match(registersA: number[], registersB: number[]): boolean {
     return registersA.every((registerA, index) => registerA === registersB[index]);
+  }
+
+  private runProgram(initialRegisters: number[], instructrions: number[][], operations: Operation[]): number[] {
+    let registers = initialRegisters.slice();
+    instructrions.forEach(instructrion => {
+      registers = operations[instructrion[0]].calc(registers, instructrion[1], instructrion[2], instructrion[3]);
+    });
+    return registers;
   }
 }
