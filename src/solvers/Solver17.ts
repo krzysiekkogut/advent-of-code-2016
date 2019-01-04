@@ -34,7 +34,19 @@ export default class Solver17 extends BaseSolver<IRange[]> {
   }
 
   protected solvePart2(input: IRange[]): string {
-    throw new Error('Method not implemented.');
+    const map = this.createMap(input);
+
+    this.flow(
+      0,
+      500,
+      map
+    );
+
+    return map.data
+      .filter((_, index) => index >= map.minY)
+      .reduce((prev, curr) => prev.concat(curr), [])
+      .filter(s => s === '~')
+      .length.toString();
   }
 
   protected parseInput(textInput: string): IRange[] {
@@ -84,11 +96,6 @@ export default class Solver17 extends BaseSolver<IRange[]> {
         }
       }
     }
-
-    map.forEach(row => {
-      // tslint:disable-next-line:no-console
-      console.log(row.join(''));
-    });
 
     return {
       data: map,
