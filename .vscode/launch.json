@@ -10,7 +10,7 @@
       "name": "Debug",
       "program": "${workspaceFolder}/src/index.ts",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "args": ["17", "1"],
+      "args": ["18", "2"],
       "preLaunchTask": "tsc"
     }
   ]
