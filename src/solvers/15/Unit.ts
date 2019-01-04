@@ -32,7 +32,27 @@ export default class Unit {
   }
 
   public attack(): void {
-    const target = this.getAdjacentFields(this.field).find(f => !!f.unit && f.unit.unitType !== this.unitType);
+    const target = this.getAdjacentFields(this.field)
+      .filter(f => !!f.unit && f.unit.unitType !== this.unitType)
+      .sort((fieldA, fieldB) => {
+        if (fieldA.unit!.hitPoints < fieldB.unit!.hitPoints) {
+          return -1;
+        }
+
+        if (fieldA.unit!.hitPoints > fieldB.unit!.hitPoints) {
+          return 1;
+        }
+
+        if (fieldA.row < fieldB.row) {
+          return -1;
+        }
+
+        if (fieldA.row > fieldB.row) {
+          return 1;
+        }
+
+        return fieldA.col < fieldB.col ? -1 : 1;
+      })[0];
     if (target) {
       target.unit!.hitPoints -= this.attackPower;
     }

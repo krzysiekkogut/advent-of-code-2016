@@ -2,7 +2,7 @@ import FightMap from './15/FightMap';
 import BaseSolver from './BaseSolver';
 
 export default class Solver15 extends BaseSolver<FightMap> {
-  protected filePath = '15.ex.txt';
+  protected filePath = '15.txt';
 
   protected solvePart1(map: FightMap): string {
     while (map.startNextRound) {
@@ -18,12 +18,10 @@ export default class Solver15 extends BaseSolver<FightMap> {
 
         if (i === units.length - 1) {
           map.noOfFinishedRounds++;
-          map.print();
         }
       }
     }
 
-    map.print();
     const hpLeft = map
       .getAllUnits()
       .map(u => u.hitPoints)

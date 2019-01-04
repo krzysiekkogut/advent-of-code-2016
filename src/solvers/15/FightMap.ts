@@ -53,16 +53,19 @@ export default class FightMap {
     // tslint:disable:no-console
     console.log(`\nRound: ${this.noOfFinishedRounds}`);
     this.mapData.forEach(l => {
+      let hpInfo = '';
       const line = l
         .map(f => {
           if (f.unit && f.unit.hitPoints > 0) {
+            hpInfo += ` (${f.unit.hitPoints}) `;
             return f.unit.unitType;
           }
 
           return f.isCavern ? '.' : '#';
         })
         .join('');
-      console.log(line);
+
+      console.log(line + hpInfo);
     });
   }
 
