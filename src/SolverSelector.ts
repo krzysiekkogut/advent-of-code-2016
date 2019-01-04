@@ -18,6 +18,7 @@ import Solver14 from './solvers/Solver14';
 import Solver16 from './solvers/Solver16';
 import Solver17 from './solvers/Solver17';
 import Solver18 from './solvers/Solver18';
+import Solver19 from './solvers/Solver19';
 import Solver25 from './solvers/Solver25';
 
 class SolverSelector {
@@ -57,6 +58,8 @@ class SolverSelector {
         return new Solver17(variant);
       case 18:
         return new Solver18(variant);
+      case 19:
+        return new Solver19(variant);
       case 25:
         return new Solver25(variant);
     }

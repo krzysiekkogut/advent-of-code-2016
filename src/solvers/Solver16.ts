@@ -1,23 +1,23 @@
 import { EOL } from 'os';
-import Operation from './16/Operation';
 import BaseSolver from './BaseSolver';
+import Operation from './DeviceProcessor/Operation';
 
-import Addi from './16/Addi';
-import Addr from './16/Addr';
-import Bani from './16/Bani';
-import Banr from './16/Banr';
-import Bori from './16/Bori';
-import Borr from './16/Borr';
-import Eqir from './16/Eqir';
-import Eqri from './16/Eqri';
-import Eqrr from './16/Eqrr';
-import Gtir from './16/Gtir';
-import Gtri from './16/Gtri';
-import Gtrr from './16/Gtrr';
-import Muli from './16/Muli';
-import Mulr from './16/Mulr';
-import Seti from './16/Seti';
-import Setr from './16/Setr';
+import Addi from './DeviceProcessor/Addi';
+import Addr from './DeviceProcessor/Addr';
+import Bani from './DeviceProcessor/Bani';
+import Banr from './DeviceProcessor/Banr';
+import Bori from './DeviceProcessor/Bori';
+import Borr from './DeviceProcessor/Borr';
+import Eqir from './DeviceProcessor/Eqir';
+import Eqri from './DeviceProcessor/Eqri';
+import Eqrr from './DeviceProcessor/Eqrr';
+import Gtir from './DeviceProcessor/Gtir';
+import Gtri from './DeviceProcessor/Gtri';
+import Gtrr from './DeviceProcessor/Gtrr';
+import Muli from './DeviceProcessor/Muli';
+import Mulr from './DeviceProcessor/Mulr';
+import Seti from './DeviceProcessor/Seti';
+import Setr from './DeviceProcessor/Setr';
 
 interface ISample {
   after: number[];
