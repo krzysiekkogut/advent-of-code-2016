@@ -7,7 +7,7 @@ export default class FightMap {
 
   private mapData: Field[][];
 
-  constructor(mapText: string) {
+  constructor(private mapText: string, elfsPower = 3) {
     this.mapData = [];
     mapText
       .split(EOL)
@@ -18,10 +18,12 @@ export default class FightMap {
         for (let colNo = 0; colNo < line.length; colNo++) {
           switch (line[colNo]) {
             case 'E':
-              this.mapData[rowNo].push(new Field(rowNo, colNo, this, true, new Unit(this, 'E', rowNo, colNo)));
+              this.mapData[rowNo].push(
+                new Field(rowNo, colNo, this, true, new Unit(this, 'E', rowNo, colNo, elfsPower))
+              );
               break;
             case 'G':
-              this.mapData[rowNo].push(new Field(rowNo, colNo, this, true, new Unit(this, 'G', rowNo, colNo)));
+              this.mapData[rowNo].push(new Field(rowNo, colNo, this, true, new Unit(this, 'G', rowNo, colNo, 3)));
               break;
             case '#':
               this.mapData[rowNo].push(new Field(rowNo, colNo, this, false));
@@ -49,26 +51,6 @@ export default class FightMap {
     return this.mapData[0].length;
   }
 
-  public print() {
-    // tslint:disable:no-console
-    console.log(`\nRound: ${this.noOfFinishedRounds}`);
-    this.mapData.forEach(l => {
-      let hpInfo = '';
-      const line = l
-        .map(f => {
-          if (f.unit && f.unit.hitPoints > 0) {
-            hpInfo += ` (${f.unit.hitPoints}) `;
-            return f.unit.unitType;
-          }
-
-          return f.isCavern ? '.' : '#';
-        })
-        .join('');
-
-      console.log(line + hpInfo);
-    });
-  }
-
   public get(row: number, col: number): Field | null {
     if (row < 0 || row >= this.mapData.length || col < 0 || col >= this.mapData[0].length) {
       return null;
@@ -88,5 +70,9 @@ export default class FightMap {
     );
 
     return units;
+  }
+
+  public cloneWithElfsPower(elfsPower: number): FightMap {
+    return new FightMap(this.mapText, elfsPower);
   }
 }

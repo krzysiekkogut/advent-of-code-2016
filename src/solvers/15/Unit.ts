@@ -8,10 +8,15 @@ interface IGraphField {
   parent: IGraphField | null;
 }
 export default class Unit {
-  public attackPower: number = 3;
   public hitPoints: number = 200;
 
-  constructor(private map: FightMap, public unitType: UnitType, public row: number, public col: number) {}
+  constructor(
+    private map: FightMap,
+    public unitType: UnitType,
+    public row: number,
+    public col: number,
+    public attackPower: number
+  ) {}
 
   public get field(): Field {
     return this.map.get(this.row, this.col)!;
@@ -31,7 +36,8 @@ export default class Unit {
     return true;
   }
 
-  public attack(): void {
+  public attack(): boolean {
+    let elfDied = false;
     const target = this.getAdjacentFields(this.field)
       .filter(f => !!f.unit && f.unit.unitType !== this.unitType)
       .sort((fieldA, fieldB) => {
@@ -58,8 +64,14 @@ export default class Unit {
     }
 
     if (target && target.unit!.hitPoints <= 0) {
+      if (target.unit!.unitType === 'E') {
+        elfDied = true;
+      }
+
       target.unit = null;
     }
+
+    return elfDied;
   }
 
   private getAdjacentFields(field: Field): Field[] {
