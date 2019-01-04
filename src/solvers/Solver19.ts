@@ -45,8 +45,25 @@ export default class Solver19 extends BaseSolver<IProgram> {
     return registers[0].toString();
   }
 
-  protected solvePart2(input: IProgram): string {
-    throw new Error('Method not implemented.');
+  protected solvePart2({ instructionPointerIndex, instructions }: IProgram): string {
+    let registers = [1, 0, 0, 0, 0, 0];
+    while (registers[instructionPointerIndex] < 34) {
+      const { operation, inputA, inputB, output } = instructions[registers[instructionPointerIndex]];
+      registers = operation.calc(registers, inputA, inputB, output);
+      registers[instructionPointerIndex]++;
+    }
+
+    const N = registers[4];
+    let sum = 0;
+    let a = 1;
+    for (a = 1; a * a <= N; a++) {
+      if (N % a === 0) {
+        sum += a;
+        sum += N / a;
+      }
+    }
+
+    return sum.toString();
   }
 
   protected parseInput(textInput: string): IProgram {
