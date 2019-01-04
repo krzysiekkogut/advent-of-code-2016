@@ -15,6 +15,7 @@ import Solver11 from './solvers/Solver11';
 import Solver12 from './solvers/Solver12';
 import Solver13 from './solvers/Solver13';
 import Solver14 from './solvers/Solver14';
+import Solver15 from './solvers/Solver15';
 import Solver16 from './solvers/Solver16';
 import Solver17 from './solvers/Solver17';
 import Solver18 from './solvers/Solver18';
@@ -52,6 +53,8 @@ class SolverSelector {
         return new Solver13(variant);
       case 14:
         return new Solver14(variant);
+      case 15:
+        return new Solver15(variant);
       case 16:
         return new Solver16(variant);
       case 17:
