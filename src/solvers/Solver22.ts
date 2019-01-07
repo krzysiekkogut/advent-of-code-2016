@@ -1,4 +1,5 @@
 import { EOL } from 'os';
+import PriorityQueue from './22/PriorityQueue';
 import BaseSolver from './BaseSolver';
 
 interface IRegion {
@@ -16,8 +17,8 @@ interface INode {
   tool: number;
 }
 
-const NONE = 0;
-const TORCH = 1;
+const TORCH = 0;
+const NONE = 1;
 const CLIMBING_GEAR = 2;
 
 const ROCKY = 0;
@@ -41,124 +42,108 @@ export default class Solver22 extends BaseSolver<{ depth: number; targetX: numbe
 
   protected solvePart2({ depth, targetX, targetY }: { depth: number; targetX: number; targetY: number }): string {
     const caveSystem = this.createMap(depth, targetX, targetY);
-    const graph: INode[][][] = new Array(targetY * 2 + 1);
-    for (let y = 0; y < graph.length; y++) {
-      graph[y] = new Array(targetX * 2 + 1);
-      for (let x = 0; x < graph[y].length; x++) {
+    const queue = new PriorityQueue<INode>(node => node.distance);
+    const graph: INode[][][] = new Array(caveSystem.length);
+    for (let y = graph.length - 1; y >= 0; y--) {
+      graph[y] = new Array(caveSystem[0].length);
+      for (let x = graph[y].length - 1; x >= 0; x--) {
         graph[y][x] = new Array(3);
         for (let tool = 0; tool < 3; tool++) {
-          graph[y][x][tool] = { y, x, distance: Infinity, tool };
+          if (
+            (tool === NONE && caveSystem[y][x].riskLevel === ROCKY) ||
+            (tool === TORCH && caveSystem[y][x].riskLevel === WET) ||
+            (tool === CLIMBING_GEAR && caveSystem[y][x].riskLevel === NARROW)
+          ) {
+            continue;
+          }
+          graph[y][x][tool] = { y, x, distance: 100000, tool };
+          queue.queue(graph[y][x][tool]);
         }
       }
     }
 
     graph[0][0][TORCH].distance = 0;
-    const queue = [graph[0][0][TORCH]];
-
-    while (queue.length > 0) {
-      const { y, x, distance, tool } = queue.shift()!;
+    while (!queue.isEmpty()) {
+      const { y, x, distance, tool } = queue.dequeue();
       const possibleNextRegions = this.getPossibleSteps(caveSystem, y, x);
 
-      // TODO: DO NOT CHANGE IN PLACE AS NO OPTIONS ARE AVAILABLE ANE IT CAN ELIMINATE VALID PATHS
-      // Change equipment in place
-      switch (caveSystem[y][x].riskLevel) {
-        case ROCKY:
-          if (tool !== TORCH && distance + 7 < graph[y][x][TORCH].distance) {
-            graph[y][x][TORCH].distance = distance + 7;
-            queue.push(graph[y][x][TORCH]);
-          }
-
-          if (tool !== CLIMBING_GEAR && distance + 7 < graph[y][x][CLIMBING_GEAR].distance) {
-            graph[y][x][CLIMBING_GEAR].distance = distance + 7;
-            queue.push(graph[y][x][CLIMBING_GEAR]);
-          }
-
-          break;
-        case WET:
-          if (tool !== CLIMBING_GEAR && distance + 7 < graph[y][x][CLIMBING_GEAR].distance) {
-            graph[y][x][CLIMBING_GEAR].distance = distance + 7;
-            queue.push(graph[y][x][CLIMBING_GEAR]);
-          }
-
-          if (tool !== NONE && distance + 7 < graph[y][x][NONE].distance) {
-            graph[y][x][NONE].distance = distance + 7;
-            queue.push(graph[y][x][NONE]);
-          }
-
-          break;
-        case NARROW:
-          if (tool !== TORCH && distance + 7 < graph[y][x][TORCH].distance) {
-            graph[y][x][TORCH].distance = distance + 7;
-            queue.push(graph[y][x][TORCH]);
-          }
-
-          if (tool !== NONE && distance + 7 < graph[y][x][NONE].distance) {
-            graph[y][x][NONE].distance = distance + 7;
-            queue.push(graph[y][x][NONE]);
-          }
-
-          break;
-      }
-
-      // Move
+      // only allow for tools that are OK in source and target
       for (const region of possibleNextRegions) {
         const torchOption = graph[region.y][region.x][TORCH];
         const climbingGearOption = graph[region.y][region.x][CLIMBING_GEAR];
         const noneOption = graph[region.y][region.x][NONE];
         switch (region.riskLevel) {
-          case ROCKY: // rocky - torch or gear
-            switch (tool) {
-              case TORCH:
-                if (distance + 1 < torchOption.distance) {
-                  torchOption.distance = distance + 1;
-                  queue.push(torchOption);
-                }
-
-                break;
-              case CLIMBING_GEAR:
-                if (distance + 1 < climbingGearOption.distance) {
-                  climbingGearOption.distance = distance + 1;
-                  queue.push(climbingGearOption);
-                }
-
-                break;
+          case ROCKY:
+            // torch
+            if (caveSystem[y][x].riskLevel !== WET) {
+              if (tool === TORCH && distance + 1 < torchOption.distance) {
+                torchOption.distance = distance + 1;
+                queue.changePriority(torchOption);
+              } else if (tool !== TORCH && distance + 1 + 7 < torchOption.distance) {
+                torchOption.distance = distance + 1 + 7;
+                queue.changePriority(torchOption);
+              }
             }
+
+            // climbing gear
+            if (caveSystem[y][x].riskLevel !== NARROW) {
+              if (tool === CLIMBING_GEAR && distance + 1 < climbingGearOption.distance) {
+                climbingGearOption.distance = distance + 1;
+                queue.changePriority(climbingGearOption);
+              } else if (tool !== CLIMBING_GEAR && distance + 1 + 7 < climbingGearOption.distance) {
+                climbingGearOption.distance = distance + 1 + 7;
+                queue.changePriority(climbingGearOption);
+              }
+            }
+
             break;
-          case WET: // wet - gear or none
-            switch (tool) {
-              case CLIMBING_GEAR:
-                if (distance + 1 < climbingGearOption.distance) {
-                  climbingGearOption.distance = distance + 1;
-                  queue.push(climbingGearOption);
-                }
-
-                break;
-              case NONE:
-                if (distance + 1 < noneOption.distance) {
-                  noneOption.distance = distance + 1;
-                  queue.push(noneOption);
-                }
-
-                break;
+          case WET:
+            // climbing gear
+            if (caveSystem[y][x].riskLevel !== NARROW) {
+              if (tool === CLIMBING_GEAR && distance + 1 < climbingGearOption.distance) {
+                climbingGearOption.distance = distance + 1;
+                queue.changePriority(climbingGearOption);
+              } else if (tool !== CLIMBING_GEAR && distance + 1 + 7 < climbingGearOption.distance) {
+                climbingGearOption.distance = distance + 1 + 7;
+                queue.changePriority(climbingGearOption);
+              }
             }
+
+            // no equipment
+            if (caveSystem[y][x].riskLevel !== ROCKY) {
+              if (tool === NONE && distance + 1 < noneOption.distance) {
+                noneOption.distance = distance + 1;
+                queue.changePriority(noneOption);
+              } else if (tool !== NONE && distance + 1 + 7 < noneOption.distance) {
+                noneOption.distance = distance + 1 + 7;
+                queue.changePriority(noneOption);
+              }
+            }
+
             break;
-          case NARROW: // narrow - torch or none
-            switch (tool) {
-              case TORCH:
-                if (distance + 1 < torchOption.distance) {
-                  torchOption.distance = distance + 1;
-                  queue.push(torchOption);
-                }
-
-                break;
-              case NONE:
-                if (distance + 1 < noneOption.distance) {
-                  noneOption.distance = distance + 1;
-                  queue.push(noneOption);
-                }
-
-                break;
+          case NARROW:
+            // torch
+            if (caveSystem[y][x].riskLevel !== WET) {
+              if (tool === TORCH && distance + 1 < torchOption.distance) {
+                torchOption.distance = distance + 1;
+                queue.changePriority(torchOption);
+              } else if (tool !== TORCH && distance + 1 + 7 < torchOption.distance) {
+                torchOption.distance = distance + 1 + 7;
+                queue.changePriority(torchOption);
+              }
             }
+
+            // no equipment
+            if (caveSystem[y][x].riskLevel !== ROCKY) {
+              if (tool === NONE && distance + 1 < noneOption.distance) {
+                noneOption.distance = distance + 1;
+                queue.changePriority(noneOption);
+              } else if (tool !== NONE && distance + 1 + 7 < noneOption.distance) {
+                noneOption.distance = distance + 1 + 7;
+                queue.changePriority(noneOption);
+              }
+            }
+
             break;
         }
       }
@@ -208,9 +193,9 @@ export default class Solver22 extends BaseSolver<{ depth: number; targetX: numbe
   }
 
   private createMap(depth: number, targetX: number, targetY: number): IRegion[][] {
-    const caveSystem: IRegion[][] = new Array(targetY * 2 + 1);
+    const caveSystem: IRegion[][] = new Array(targetY + 10);
     for (let i = 0; i < caveSystem.length; i++) {
-      caveSystem[i] = new Array(targetX * 2 + 1);
+      caveSystem[i] = new Array(targetX + 55);
     }
 
     for (let y = 0; y < caveSystem.length; y++) {
