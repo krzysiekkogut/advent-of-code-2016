@@ -12,7 +12,21 @@ export default class Solver24 extends BaseSolver<IFight> {
   protected filePath = '24.txt';
 
   protected solvePart1({ immuneArmy, infectionArmy }: IFight): string {
-    throw new Error('Method not implemented.');
+    while (immuneArmy.groups.length > 0 && infectionArmy.groups.length > 0) {
+      const planAll = immuneArmy
+        .createPlan(infectionArmy)
+        .concat(infectionArmy.createPlan(immuneArmy))
+        .sort((planA, planB) => planB.attackingGroup.initiative - planA.attackingGroup.initiative);
+
+      planAll.forEach(plan => plan.attackingGroup.attack(plan.enemyGroup));
+      immuneArmy.cleanDeadGroups();
+      infectionArmy.cleanDeadGroups();
+    }
+
+    return (immuneArmy.groups.length > 0 ? immuneArmy.groups : infectionArmy.groups)
+      .map(group => group.noOfUnits)
+      .reduce((prev, curr) => prev + curr, 0)
+      .toString();
   }
 
   protected solvePart2({ immuneArmy, infectionArmy }: IFight): string {
@@ -27,8 +41,12 @@ export default class Solver24 extends BaseSolver<IFight> {
     const immuneLines = lines.slice(immuneSystemStart, infectionStart - 2).filter(line => !!line.trim());
     const infectionLines = lines.slice(infectionStart).filter(line => !!line.trim());
 
-    const immuneArmy = new Army(immuneLines.map(this.parseGroupDescription));
-    const infectionArmy = new Army(infectionLines.map(this.parseGroupDescription));
+    const immuneArmy = new Army(
+      immuneLines.map((line, index) => this.parseGroupDescription(`Immune ${index + 1}`, line))
+    );
+    const infectionArmy = new Army(
+      infectionLines.map((line, index) => this.parseGroupDescription(`Infection ${index + 1}`, line))
+    );
 
     return {
       immuneArmy,
@@ -36,7 +54,7 @@ export default class Solver24 extends BaseSolver<IFight> {
     };
   }
 
-  private parseGroupDescription(groupDescription: string): Group {
+  private parseGroupDescription(id: string, groupDescription: string): Group {
     const [
       _,
       noOfUnits,
@@ -76,6 +94,7 @@ export default class Solver24 extends BaseSolver<IFight> {
     }
 
     return new Group(
+      id,
       parseInt(noOfUnits, 10),
       parseInt(unitHitPoints, 10),
       weaknesses,
