@@ -27,6 +27,19 @@ export default class Group {
     public initiative: number
   ) {}
 
+  public clone(additionalAttackPower = 0): Group {
+    return new Group(
+      this.id,
+      this.noOfUnits,
+      this.unitHitPoints,
+      this.weaknesses.slice(),
+      this.immunities.slice(),
+      this.attackPower + additionalAttackPower,
+      this.attackType,
+      this.initiative
+    );
+  }
+
   public get effectivePower(): number {
     return this.attackPower * this.noOfUnits;
   }

@@ -11,26 +11,31 @@ interface IFight {
 export default class Solver24 extends BaseSolver<IFight> {
   protected filePath = '24.txt';
 
-  protected solvePart1({ immuneArmy, infectionArmy }: IFight): string {
-    while (immuneArmy.groups.length > 0 && infectionArmy.groups.length > 0) {
-      const planAll = immuneArmy
-        .createPlan(infectionArmy)
-        .concat(infectionArmy.createPlan(immuneArmy))
-        .sort((planA, planB) => planB.attackingGroup.initiative - planA.attackingGroup.initiative);
-
-      planAll.forEach(plan => plan.attackingGroup.attack(plan.enemyGroup));
-      immuneArmy.cleanDeadGroups();
-      infectionArmy.cleanDeadGroups();
-    }
-
-    return (immuneArmy.groups.length > 0 ? immuneArmy.groups : infectionArmy.groups)
+  protected solvePart1(fight: IFight): string {
+    const afterFight = this.playBattle(fight);
+    return (afterFight.immuneArmy.groups.length > 0 ? afterFight.immuneArmy.groups : afterFight.infectionArmy.groups)
       .map(group => group.noOfUnits)
       .reduce((prev, curr) => prev + curr, 0)
       .toString();
   }
 
   protected solvePart2({ immuneArmy, infectionArmy }: IFight): string {
-    throw new Error('Method not implemented.');
+    let boost = 1;
+    while (true) {
+      const afterFight = this.playBattle({
+        immuneArmy: immuneArmy.clone(boost),
+        infectionArmy: infectionArmy.clone(),
+      });
+
+      if (!afterFight.tie && afterFight.immuneArmy.groups.length > 0) {
+        return afterFight.immuneArmy.groups
+          .map(group => group.noOfUnits)
+          .reduce((prev, curr) => prev + curr, 0)
+          .toString();
+      }
+
+      boost++;
+    }
   }
 
   protected parseInput(textInput: string): IFight {
@@ -103,5 +108,24 @@ export default class Solver24 extends BaseSolver<IFight> {
       attackType as AttackType,
       parseInt(initiative, 10)
     );
+  }
+
+  private playBattle({ immuneArmy, infectionArmy }: IFight): IFight & { tie: boolean } {
+    while (immuneArmy.groups.length > 0 && infectionArmy.groups.length > 0) {
+      const planAll = immuneArmy
+        .createPlan(infectionArmy)
+        .concat(infectionArmy.createPlan(immuneArmy))
+        .sort((planA, planB) => planB.attackingGroup.initiative - planA.attackingGroup.initiative);
+
+      if (planAll.every(plan => plan.enemyGroup.calculateDamage(plan.attackingGroup) < plan.enemyGroup.unitHitPoints)) {
+        return { immuneArmy, infectionArmy, tie: true };
+      }
+
+      planAll.forEach(plan => plan.attackingGroup.attack(plan.enemyGroup));
+      immuneArmy.cleanDeadGroups();
+      infectionArmy.cleanDeadGroups();
+    }
+
+    return { immuneArmy, infectionArmy, tie: false };
   }
 }

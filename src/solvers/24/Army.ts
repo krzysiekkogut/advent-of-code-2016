@@ -8,6 +8,10 @@ interface IPlan {
 export default class Army {
   constructor(public groups: Group[]) {}
 
+  public clone(additionalAttackPower = 0): Army {
+    return new Army(this.groups.map(group => group.clone(additionalAttackPower)));
+  }
+
   public createPlan(enemyArmy: Army): IPlan[] {
     const chosen: Group[] = [];
     return this.groups
@@ -22,18 +26,17 @@ export default class Army {
           .sort(Group.compareTargets);
 
         if (damageForEnemy.length === 0 || damageForEnemy[0].damage === 0) {
-          return { damage: 0, enemyGroup: null };
+          return { enemyGroup: (null as unknown) as Group, attackingGroup };
         }
 
         chosen.push(damageForEnemy[0].enemyGroup);
 
         return {
           attackingGroup,
-          damage: damageForEnemy[0].damage,
           enemyGroup: damageForEnemy[0].enemyGroup,
         };
       })
-      .filter(p => !!p.enemyGroup) as IPlan[];
+      .filter(p => p.enemyGroup);
   }
 
   public cleanDeadGroups(): void {
