@@ -15,7 +15,7 @@ export default class Solver20 extends BaseSolver<string[]> {
     return Array.from(nodes.values())
       .map(m => Array.from(m.values()))
       .reduce((prev, curr) => prev.concat(curr), [])
-      .sort((nodeA, nodeB) => (nodeA.distance > nodeB.distance ? -1 : 1))[0].distance;
+      .sort((nodeA, nodeB) => nodeA.distance - nodeB.distance)[0].distance;
   }
 
   protected solvePart2(input: string[]): number {

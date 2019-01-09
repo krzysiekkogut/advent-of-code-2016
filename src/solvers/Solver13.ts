@@ -29,7 +29,7 @@ export default class Solver13 extends BaseSolver<IMap, string> {
   protected solvePart1(input: IMap): string {
     while (true) {
       const colision = this.moveCarts(input);
-      input.carts.sort((cart1, cart2) => (cart1.y < cart2.y ? -1 : cart1.y > cart2.y ? 1 : cart1.x < cart2.x ? -1 : 1));
+      input.carts.sort((cart1, cart2) => (cart1.y === cart2.y ? cart1.x - cart2.x : cart1.y - cart2.y));
       if (colision) {
         return `${colision.x},${colision.y}`;
       }
@@ -40,7 +40,7 @@ export default class Solver13 extends BaseSolver<IMap, string> {
     while (input.carts.length > 1) {
       this.moveCarts(input, true);
       input.carts = input.carts.filter(c => c.alive);
-      input.carts.sort((cart1, cart2) => (cart1.y < cart2.y ? -1 : cart1.y > cart2.y ? 1 : cart1.x < cart2.x ? -1 : 1));
+      input.carts.sort((cart1, cart2) => (cart1.y === cart2.y ? cart1.x - cart2.x : cart1.y - cart2.y));
     }
 
     const outstandingCart = input.carts[0];

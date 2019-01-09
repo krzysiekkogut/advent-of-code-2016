@@ -40,7 +40,9 @@ export default class Solver10 extends BaseSolver<IPoint[], string> {
     }
 
     input.sort((pointA, pointB) =>
-      pointA.position.y < pointB.position.y ? -1 : pointA.position.x < pointB.position.x ? -1 : 1
+      pointA.position.y === pointB.position.y
+        ? pointA.position.x - pointB.position.x
+        : pointA.position.y - pointB.position.y
     );
     this.printSky(
       input,

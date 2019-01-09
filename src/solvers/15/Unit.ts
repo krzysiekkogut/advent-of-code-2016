@@ -40,25 +40,13 @@ export default class Unit {
     let elfDied = false;
     const target = this.getAdjacentFields(this.field)
       .filter(f => !!f.unit && f.unit.unitType !== this.unitType)
-      .sort((fieldA, fieldB) => {
-        if (fieldA.unit!.hitPoints < fieldB.unit!.hitPoints) {
-          return -1;
-        }
-
-        if (fieldA.unit!.hitPoints > fieldB.unit!.hitPoints) {
-          return 1;
-        }
-
-        if (fieldA.row < fieldB.row) {
-          return -1;
-        }
-
-        if (fieldA.row > fieldB.row) {
-          return 1;
-        }
-
-        return fieldA.col < fieldB.col ? -1 : 1;
-      })[0];
+      .sort((fieldA, fieldB) =>
+        fieldA.unit!.hitPoints === fieldB.unit!.hitPoints
+          ? fieldA.row === fieldB.row
+            ? fieldA.col - fieldB.col
+            : fieldA.row - fieldB.row
+          : fieldA.unit!.hitPoints - fieldB.unit!.hitPoints
+      )[0];
     if (target) {
       target.unit!.hitPoints -= this.attackPower;
     }
@@ -118,7 +106,7 @@ export default class Unit {
       curr = curr.parent;
     }
 
-    return path.reverse()[1];
+    return path[path.length - 2];
   }
 
   private isFieldInRange(field: Field): boolean {
