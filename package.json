@@ -28,11 +28,15 @@
   },
   "homepage": "https://github.com/krzysiekkogut/advent-of-code-2018#readme",
   "devDependencies": {
+    "@types/js-md5": "^0.4.2",
     "@types/node": "^10.12.10",
     "rimraf": "^2.6.2",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.16.0",
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.1.6"
+  },
+  "dependencies": {
+    "js-md5": "^0.7.3"
   }
 }
