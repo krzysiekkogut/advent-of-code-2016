@@ -8,10 +8,10 @@ interface ISpaceTimePoint {
   t: number;
 }
 
-export default class Solver25 extends BaseSolver<ISpaceTimePoint[]> {
+export default class Solver25 extends BaseSolver<ISpaceTimePoint[], number, string> {
   protected filePath = '25.txt';
 
-  protected solvePart1(input: ISpaceTimePoint[]): string {
+  protected solvePart1(input: ISpaceTimePoint[]): number {
     let constellations: ISpaceTimePoint[][] = [];
     for (const point of input) {
       const newConstellations: ISpaceTimePoint[][] = [];
@@ -33,10 +33,10 @@ export default class Solver25 extends BaseSolver<ISpaceTimePoint[]> {
       constellations = newConstellations;
     }
 
-    return constellations.length.toString();
+    return constellations.length;
   }
 
-  protected solvePart2(input: ISpaceTimePoint[]): string {
+  protected solvePart2(): string {
     return 'Day 25 does not have second part :)';
   }
 
@@ -46,14 +46,8 @@ export default class Solver25 extends BaseSolver<ISpaceTimePoint[]> {
       .map(l => l.trim())
       .filter(line => !!line)
       .map(line => {
-        const coords = line.split(',');
-        return {
-          x: parseInt(coords[0], 10),
-          y: parseInt(coords[1], 10),
-          z: parseInt(coords[2], 10),
-          // tslint:disable-next-line:object-literal-sort-keys
-          t: parseInt(coords[3], 10),
-        } as ISpaceTimePoint;
+        const [x, y, z, t] = line.split(',').map(parseInt);
+        return { t, x, y, z };
       });
   }
 

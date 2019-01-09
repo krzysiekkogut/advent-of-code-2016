@@ -10,7 +10,7 @@ type Area = Field[][];
 export default class Solver18 extends BaseSolver<Field[][]> {
   protected filePath = '18.txt';
 
-  protected solvePart1(input: Area): string {
+  protected solvePart1(input: Area): number {
     for (let i = 0; i < 10; i++) {
       const next = this.applyChanges(input);
       input = next;
@@ -25,10 +25,10 @@ export default class Solver18 extends BaseSolver<Field[][]> {
       }
     }
 
-    return (trees * lumberyards).toString();
+    return trees * lumberyards;
   }
 
-  protected solvePart2(input: Area): string {
+  protected solvePart2(input: Area): number {
     const states: Area[] = [input];
 
     let cycleStartIndex = -1;
@@ -55,7 +55,7 @@ export default class Solver18 extends BaseSolver<Field[][]> {
       }
     }
 
-    return (trees * lumberyards).toString();
+    return trees * lumberyards;
   }
 
   protected parseInput(textInput: string): Area {

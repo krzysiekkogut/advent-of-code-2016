@@ -12,7 +12,7 @@ interface IStepInfo {
   isWorkedOn: boolean;
 }
 
-export default class Solver7 extends BaseSolver<IInstruction[]> {
+export default class Solver7 extends BaseSolver<IInstruction[], string, number> {
   protected filePath: string = '7.txt';
 
   protected solvePart1(input: IInstruction[]): string {
@@ -31,7 +31,7 @@ export default class Solver7 extends BaseSolver<IInstruction[]> {
     return result;
   }
 
-  protected solvePart2(input: IInstruction[]): string {
+  protected solvePart2(input: IInstruction[]): number {
     const graph = this.buildGraph(input);
     const workers = new Map<number, string>();
     for (let i = 1; i <= 5; i++) {
@@ -79,13 +79,13 @@ export default class Solver7 extends BaseSolver<IInstruction[]> {
       second++;
     }
 
-    return second.toString();
+    return second;
   }
 
   protected parseInput(textInput: string): Array<{ stepName: string; nextStep: string }> {
     return textInput.split(EOL).map(line => {
-      const match = line.match(/Step (\w) must be finished before step (\w) can begin./);
-      return { stepName: match![1], nextStep: match![2] };
+      const [_, stepName, nextStep] = line.match(/Step (\w) must be finished before step (\w) can begin./)!;
+      return { stepName, nextStep };
     });
   }
 

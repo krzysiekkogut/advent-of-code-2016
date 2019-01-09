@@ -10,7 +10,7 @@ interface ILinkedListNode {
 export default class Solver9 extends BaseSolver<{ playersCount: number; marblesCount: number }> {
   protected filePath: string = '9.txt';
 
-  protected solvePart1({ playersCount, marblesCount }: { playersCount: number; marblesCount: number }): string {
+  protected solvePart1({ playersCount, marblesCount }: { playersCount: number; marblesCount: number }): number {
     const scores = new Map<number, number>();
     let currentMarble = new LinkedList();
 
@@ -33,18 +33,21 @@ export default class Solver9 extends BaseSolver<{ playersCount: number; marblesC
       p %= playersCount;
     }
 
-    return Math.max(...Array.from(scores.values())).toString();
+    return Math.max(...Array.from(scores.values()));
   }
 
-  protected solvePart2({ playersCount, marblesCount }: { playersCount: number; marblesCount: number }): string {
+  protected solvePart2({ playersCount, marblesCount }: { playersCount: number; marblesCount: number }): number {
     return this.solvePart1({ playersCount, marblesCount: marblesCount * 100 });
   }
 
   protected parseInput(textInput: string): { playersCount: number; marblesCount: number } {
-    const match = textInput.match(/(\d+) players; last marble is worth (\d+) points/);
+    const [playersCount, marblesCount] = textInput
+      .match(/(\d+) players; last marble is worth (\d+) points/)!
+      .slice(1)
+      .map(parseInt);
     return {
-      marblesCount: parseInt(match![2], 10),
-      playersCount: parseInt(match![1], 10),
+      marblesCount,
+      playersCount,
     };
   }
 }

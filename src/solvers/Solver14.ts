@@ -1,6 +1,6 @@
 import BaseSolver from './BaseSolver';
 
-export default class Solver14 extends BaseSolver<number> {
+export default class Solver14 extends BaseSolver<number, string> {
   protected filePath: string = '14.txt';
 
   protected solvePart1(input: number): string {
@@ -21,9 +21,6 @@ export default class Solver14 extends BaseSolver<number> {
       elf2 += recipes[elf2] + 1;
       elf2 %= recipes.length;
     }
-
-    // tslint:disable-next-line:no-console
-    console.log(recipes.join(''));
 
     return recipes.slice(input, input + 10).join('');
   }
@@ -58,6 +55,6 @@ export default class Solver14 extends BaseSolver<number> {
   }
 
   protected parseInput(textInput: string): number {
-    return parseInt(textInput, 10);
+    return parseInt(textInput);
   }
 }

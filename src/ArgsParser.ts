@@ -8,8 +8,8 @@ class ArgsParser {
       throw new Error(`Incorrent number of arguments.${EOL}Usage: yarn|npm start <day 1-25> <variant 1|2>`);
     }
 
-    const day = parseInt(customArgs[0], 10);
-    const variant = parseInt(customArgs[1], 10);
+    const day = parseInt(customArgs[0]);
+    const variant = parseInt(customArgs[1]);
 
     if (isNaN(day) || isNaN(variant)) {
       throw new Error(`Incorrent arguments.${EOL}Usage: yarn|npm start <day 1-25> <variant 1|2>`);

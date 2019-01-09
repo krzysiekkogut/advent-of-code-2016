@@ -3,11 +3,11 @@ import BaseSolver from './BaseSolver';
 export default class Solver5 extends BaseSolver<string> {
   protected filePath: string = '5.txt';
 
-  protected solvePart1(input: string): string {
-    return this.reducePolymer(input).length.toString();
+  protected solvePart1(input: string): number {
+    return this.reducePolymer(input).length;
   }
 
-  protected solvePart2(input: string): string {
+  protected solvePart2(input: string): number {
     let minPolymerLength = Infinity;
     for (let char = 'a'.charCodeAt(0); char <= 'z'.charCodeAt(0); char++) {
       const regExp = new RegExp(String.fromCharCode(char), 'ig');
@@ -15,7 +15,7 @@ export default class Solver5 extends BaseSolver<string> {
       minPolymerLength = Math.min(polymerLength, minPolymerLength);
     }
 
-    return minPolymerLength.toString();
+    return minPolymerLength;
   }
 
   protected parseInput(textInput: string): string {

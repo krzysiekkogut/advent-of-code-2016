@@ -10,22 +10,20 @@ interface INode {
 export default class Solver20 extends BaseSolver<string[]> {
   protected filePath = '20.txt';
 
-  protected solvePart1(input: string[]): string {
+  protected solvePart1(input: string[]): number {
     const nodes = this.createMap(input);
     return Array.from(nodes.values())
       .map(m => Array.from(m.values()))
       .reduce((prev, curr) => prev.concat(curr), [])
-      .sort((nodeA, nodeB) => (nodeA.distance > nodeB.distance ? -1 : 1))[0]
-      .distance.toString();
+      .sort((nodeA, nodeB) => (nodeA.distance > nodeB.distance ? -1 : 1))[0].distance;
   }
 
-  protected solvePart2(input: string[]): string {
+  protected solvePart2(input: string[]): number {
     const nodes = this.createMap(input);
     return Array.from(nodes.values())
       .map(m => Array.from(m.values()))
       .reduce((prev, curr) => prev.concat(curr), [])
-      .filter(node => node.distance >= 1000)
-      .length.toString();
+      .filter(node => node.distance >= 1000).length;
   }
 
   protected parseInput(textInput: string): string[] {

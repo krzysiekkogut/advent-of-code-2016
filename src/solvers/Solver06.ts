@@ -10,7 +10,7 @@ interface IPoint {
 export default class Solver7 extends BaseSolver<IPoint[]> {
   protected filePath: string = '6.txt';
 
-  protected solvePart1(input: IPoint[]): string {
+  protected solvePart1(input: IPoint[]): number {
     const ROWS = Math.max(...input.map(p => p.y)) + 1;
     const COLS = Math.max(...input.map(p => p.x)) + 1;
 
@@ -64,10 +64,10 @@ export default class Solver7 extends BaseSolver<IPoint[]> {
       }
     });
 
-    return Math.max(...Array.from(cover.values())).toString();
+    return Math.max(...Array.from(cover.values()));
   }
 
-  protected solvePart2(input: IPoint[]): string {
+  protected solvePart2(input: IPoint[]): number {
     const ROWS = Math.max(...input.map(p => p.y)) + 1;
     const COLS = Math.max(...input.map(p => p.x)) + 1;
     const grid = new Array<number[]>(ROWS);
@@ -88,14 +88,16 @@ export default class Solver7 extends BaseSolver<IPoint[]> {
       }
     }
 
-    return counter.toString();
+    return counter;
   }
 
   protected parseInput(textInput: string): IPoint[] {
-    return textInput.split(EOL).map((coords, index) => ({
-      id: index,
-      x: parseInt(coords.split(',')[0].trim(), 10),
-      y: parseInt(coords.split(',')[1].trim(), 10),
-    }));
+    return textInput.split(EOL).map((coords, id) => {
+      const [x, y] = coords
+        .split(',')
+        .map(c => c.trim())
+        .map(parseInt);
+      return { id, x, y };
+    });
   }
 }

@@ -5,7 +5,8 @@
   "rules": {
     "max-line-length": {
       "options": [120]
-    }
+    },
+    "radix": false
   },
   "jsRules": {
     "max-line-length": {

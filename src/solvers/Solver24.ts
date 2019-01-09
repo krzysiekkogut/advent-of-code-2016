@@ -11,15 +11,14 @@ interface IFight {
 export default class Solver24 extends BaseSolver<IFight> {
   protected filePath = '24.txt';
 
-  protected solvePart1(fight: IFight): string {
+  protected solvePart1(fight: IFight): number {
     const afterFight = this.playBattle(fight);
     return (afterFight.immuneArmy.groups.length > 0 ? afterFight.immuneArmy.groups : afterFight.infectionArmy.groups)
       .map(group => group.noOfUnits)
-      .reduce((prev, curr) => prev + curr, 0)
-      .toString();
+      .reduce((prev, curr) => prev + curr, 0);
   }
 
-  protected solvePart2({ immuneArmy, infectionArmy }: IFight): string {
+  protected solvePart2({ immuneArmy, infectionArmy }: IFight): number {
     let boost = 1;
     while (true) {
       const afterFight = this.playBattle({
@@ -28,10 +27,7 @@ export default class Solver24 extends BaseSolver<IFight> {
       });
 
       if (!afterFight.tie && afterFight.immuneArmy.groups.length > 0) {
-        return afterFight.immuneArmy.groups
-          .map(group => group.noOfUnits)
-          .reduce((prev, curr) => prev + curr, 0)
-          .toString();
+        return afterFight.immuneArmy.groups.map(group => group.noOfUnits).reduce((prev, curr) => prev + curr, 0);
       }
 
       boost++;
@@ -69,8 +65,7 @@ export default class Solver24 extends BaseSolver<IFight> {
       attackType,
       initiative,
     ] = groupDescription.match(
-      // tslint:disable-next-line:max-line-length
-      /(\d+) units each with (\d+) hit points (\([\w\s,;]+\))? ?with an attack that does (\d+) (\w+) damage at initiative (\d+)/
+      /(\d+) units each with (\d+) hit points (\([\w\s,;]+\))? ?with an attack that does (\d+) (\w+) damage at initiative (\d+)/ // tslint:disable-line:max-line-length
     )!;
 
     const weaknesses: AttackType[] = [];
@@ -100,13 +95,13 @@ export default class Solver24 extends BaseSolver<IFight> {
 
     return new Group(
       id,
-      parseInt(noOfUnits, 10),
-      parseInt(unitHitPoints, 10),
+      parseInt(noOfUnits),
+      parseInt(unitHitPoints),
       weaknesses,
       immunities,
-      parseInt(attackPower, 10),
+      parseInt(attackPower),
       attackType as AttackType,
-      parseInt(initiative, 10)
+      parseInt(initiative)
     );
   }
 

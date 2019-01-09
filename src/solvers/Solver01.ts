@@ -4,11 +4,11 @@ import BaseSolver from './BaseSolver';
 export default class Solver1 extends BaseSolver<number[]> {
   protected filePath: string = '1.txt';
 
-  protected solvePart1(input: number[]): string {
-    return input.reduce((prev, curr) => prev + curr, 0).toString();
+  protected solvePart1(input: number[]): number {
+    return input.reduce((prev, curr) => prev + curr, 0);
   }
 
-  protected solvePart2(input: number[]): string {
+  protected solvePart2(input: number[]): number {
     const frequencies = new Map<number, boolean>();
 
     let currentFreq = 0;
@@ -17,10 +17,10 @@ export default class Solver1 extends BaseSolver<number[]> {
       currentFreq += input[i];
     }
 
-    return currentFreq.toString();
+    return currentFreq;
   }
 
   protected parseInput(textInput: string): number[] {
-    return textInput.split(EOL).map(x => parseInt(x, 10));
+    return textInput.split(EOL).map(parseInt);
   }
 }

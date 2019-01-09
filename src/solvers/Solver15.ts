@@ -4,7 +4,7 @@ import BaseSolver from './BaseSolver';
 export default class Solver15 extends BaseSolver<FightMap> {
   protected filePath = '15.txt';
 
-  protected solvePart1(map: FightMap): string {
+  protected solvePart1(map: FightMap): number {
     while (map.startNextRound) {
       const units = map.getAllUnits();
       for (let i = 0; i < units.length; i++) {
@@ -27,10 +27,10 @@ export default class Solver15 extends BaseSolver<FightMap> {
       .getAllUnits()
       .map(u => u.hitPoints)
       .reduce((prev, curr) => prev + curr, 0);
-    return (map.noOfFinishedRounds * hpLeft).toString();
+    return map.noOfFinishedRounds * hpLeft;
   }
 
-  protected solvePart2(initialMap: FightMap): string {
+  protected solvePart2(initialMap: FightMap): number {
     let map = initialMap;
     let elfsPower = 3;
     let elfDied = true;
@@ -61,7 +61,7 @@ export default class Solver15 extends BaseSolver<FightMap> {
       .getAllUnits()
       .map(u => u.hitPoints)
       .reduce((prev, curr) => prev + curr, 0);
-    return (map.noOfFinishedRounds * hpLeft).toString();
+    return map.noOfFinishedRounds * hpLeft;
   }
 
   protected parseInput(textInput: string): FightMap {

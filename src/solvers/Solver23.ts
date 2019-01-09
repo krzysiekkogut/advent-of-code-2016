@@ -15,14 +15,12 @@ interface INanoBot {
 export default class Solver23 extends BaseSolver<INanoBot[]> {
   protected filePath = '23.txt';
 
-  protected solvePart1(nanobots: INanoBot[]): string {
+  protected solvePart1(nanobots: INanoBot[]): number {
     const strongestBot = nanobots.sort((botA, botB) => botB.radius - botA.radius)[0];
-    return nanobots
-      .filter(bot => this.distance(strongestBot.position, bot.position) <= strongestBot.radius)
-      .length.toString();
+    return nanobots.filter(bot => this.distance(strongestBot.position, bot.position) <= strongestBot.radius).length;
   }
 
-  protected solvePart2(bots: INanoBot[]): string {
+  protected solvePart2(bots: INanoBot[]): number {
     const minDimensions: IPoint = { x: Infinity, y: Infinity, z: Infinity };
     const maxDimensions: IPoint = { x: -Infinity, y: -Infinity, z: -Infinity };
     for (const { x, y, z } of bots.map(b => b.position)) {
@@ -66,15 +64,18 @@ export default class Solver23 extends BaseSolver<INanoBot[]> {
       gridSize = Math.floor(gridSize / 2);
     }
 
-    return this.distance(gridWithMostBots).toString();
+    return this.distance(gridWithMostBots);
   }
 
   protected parseInput(textInput: string): INanoBot[] {
     return textInput.split(EOL).map(line => {
-      const [_, x, y, z, radius] = line.match(/pos=<([\d-]+),([\d-]+),([\d-]+)>, r=([\d-]+)/)!;
+      const [x, y, z, radius] = line
+        .match(/pos=<([\d-]+),([\d-]+),([\d-]+)>, r=([\d-]+)/)!
+        .slice(1)
+        .map(parseInt);
       return {
-        position: { x: parseInt(x, 10), y: parseInt(y, 10), z: parseInt(z, 10) },
-        radius: parseInt(radius, 10),
+        position: { x, y, z },
+        radius,
       } as INanoBot;
     });
   }

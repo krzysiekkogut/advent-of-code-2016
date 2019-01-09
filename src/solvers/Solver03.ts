@@ -12,7 +12,7 @@ interface IClaim {
 export default class Solver3 extends BaseSolver<IClaim[]> {
   protected filePath: string = '3.txt';
 
-  protected solvePart1(input: IClaim[]): string {
+  protected solvePart1(input: IClaim[]): number {
     const fabric = new Map<string, number>();
     input.forEach(claim => {
       for (let i = 0; i < claim.width; i++) {
@@ -23,12 +23,10 @@ export default class Solver3 extends BaseSolver<IClaim[]> {
       }
     });
 
-    return Array.from(fabric.values())
-      .filter(c => c > 1)
-      .length.toString();
+    return Array.from(fabric.values()).filter(c => c > 1).length;
   }
 
-  protected solvePart2(input: IClaim[]): string {
+  protected solvePart2(input: IClaim[]): number {
     const fabric = new Map<string, { count: number; ids: number[] }>();
     input.forEach(claim => {
       for (let i = 0; i < claim.width; i++) {
@@ -60,21 +58,24 @@ export default class Solver3 extends BaseSolver<IClaim[]> {
       }
     });
 
-    return resultId.toString();
+    return resultId;
   }
 
   protected parseInput(textInput: string): IClaim[] {
     return textInput
       .split(EOL)
-      .map(lineText => lineText.match(/^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)$/)!)
-      .map(match => ({
-        // tslint:disable:object-literal-sort-keys
-        id: parseInt(match[1], 10),
-        left: parseInt(match[2], 10),
-        top: parseInt(match[3], 10),
-        width: parseInt(match[4], 10),
-        height: parseInt(match[5], 10),
-        // tslint:enable:object-literal-sort-keys
+      .map(lineText =>
+        lineText
+          .match(/^#(\d+) @ (\d+),(\d+): (\d+)x(\d+)$/)!
+          .slice(1)
+          .map(parseInt)
+      )
+      .map(([id, left, top, width, height]) => ({
+        height,
+        id,
+        left,
+        top,
+        width,
       }));
   }
 }

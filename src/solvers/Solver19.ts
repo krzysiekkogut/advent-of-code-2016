@@ -34,7 +34,7 @@ interface IProgram {
 export default class Solver19 extends BaseSolver<IProgram> {
   protected filePath = '19.txt';
 
-  protected solvePart1({ instructionPointerIndex, instructions }: IProgram): string {
+  protected solvePart1({ instructionPointerIndex, instructions }: IProgram): number {
     let registers = [0, 0, 0, 0, 0, 0];
     while (registers[instructionPointerIndex] >= 0 && registers[instructionPointerIndex] < instructions.length) {
       const { operation, inputA, inputB, output } = instructions[registers[instructionPointerIndex]];
@@ -42,10 +42,10 @@ export default class Solver19 extends BaseSolver<IProgram> {
       registers[instructionPointerIndex]++;
     }
 
-    return registers[0].toString();
+    return registers[0];
   }
 
-  protected solvePart2({ instructionPointerIndex, instructions }: IProgram): string {
+  protected solvePart2({ instructionPointerIndex, instructions }: IProgram): number {
     let registers = [1, 0, 0, 0, 0, 0];
     while (registers[instructionPointerIndex] < 34) {
       const { operation, inputA, inputB, output } = instructions[registers[instructionPointerIndex]];
@@ -54,16 +54,16 @@ export default class Solver19 extends BaseSolver<IProgram> {
     }
 
     const N = registers[4];
-    let sum = 0;
+    let sumOfFactors = 0;
     let a = 1;
     for (a = 1; a * a <= N; a++) {
       if (N % a === 0) {
-        sum += a;
-        sum += N / a;
+        sumOfFactors += a;
+        sumOfFactors += N / a;
       }
     }
 
-    return sum.toString();
+    return sumOfFactors;
   }
 
   protected parseInput(textInput: string): IProgram {
@@ -72,9 +72,9 @@ export default class Solver19 extends BaseSolver<IProgram> {
     const instructionPointerIndex = parseInt(lines.splice(0, 1)[0].slice(-1), 10);
     const instructions: IInstruction[] = lines.map(line => {
       const [opName, inputAText, inputBText, outputText] = line.split(' ');
-      const inputA = parseInt(inputAText, 10);
-      const inputB = parseInt(inputBText, 10);
-      const output = parseInt(outputText, 10);
+      const inputA = parseInt(inputAText);
+      const inputB = parseInt(inputBText);
+      const output = parseInt(outputText);
 
       let operation: Operation;
       switch (opName) {

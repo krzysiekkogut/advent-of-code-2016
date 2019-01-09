@@ -28,15 +28,14 @@ interface ISample {
 export default class Solver16 extends BaseSolver<{ instructrions: number[][]; samples: ISample[] }> {
   protected filePath = '16.txt';
 
-  protected solvePart1({ samples }: { instructrions: number[][]; samples: ISample[] }): string {
+  protected solvePart1({ samples }: { instructrions: number[][]; samples: ISample[] }): number {
     const samplesMap = this.getMatchingOperations(samples);
     return Array.from(samplesMap.values())
       .map(ops => (ops.length >= 3 ? 1 : (0 as number)))
-      .reduce((prev, curr) => prev + curr, 0)
-      .toString();
+      .reduce((prev, curr) => prev + curr, 0);
   }
 
-  protected solvePart2({ instructrions, samples }: { instructrions: number[][]; samples: ISample[] }): string {
+  protected solvePart2({ instructrions, samples }: { instructrions: number[][]; samples: ISample[] }): number {
     const samplesMap = this.getMatchingOperations(samples);
     const opCodes: Array<Set<string>> = new Array(16);
     for (let i = 0; i < opCodes.length; i++) {
@@ -103,7 +102,7 @@ export default class Solver16 extends BaseSolver<{ instructrions: number[][]; sa
     let registers = [0, 0, 0, 0];
     registers = this.runProgram(registers, instructrions, operations);
 
-    return registers[0].toString();
+    return registers[0];
   }
 
   protected parseInput(textInput: string): { instructrions: number[][]; samples: ISample[] } {
@@ -128,24 +127,22 @@ export default class Solver16 extends BaseSolver<{ instructrions: number[][]; sa
     const samples: ISample[] = [];
     for (let i = 0; i < lines.length - 2; i += 3) {
       samples.push({
-        before: lines[i]
-          .match(/Before:\s+\[([-\d,\s]+)\]/)![1]
-          .split(',')
-          .map(n => parseInt(n.trim(), 10)),
-        // tslint:disable-next-line:object-literal-sort-keys
-        instructrion: lines[i + 1].split(' ').map(n => parseInt(n.trim(), 10)),
-        // tslint:disable-next-line:object-literal-sort-keys
         after: lines[i + 2]
           .match(/After:\s+\[([-\d,\s]+)\]/)![1]
           .split(',')
-          .map(n => parseInt(n.trim(), 10)),
+          .map(n => parseInt(n.trim())),
+        before: lines[i]
+          .match(/Before:\s+\[([-\d,\s]+)\]/)![1]
+          .split(',')
+          .map(n => parseInt(n.trim())),
+        instructrion: lines[i + 1].split(' ').map(n => parseInt(n.trim())),
       });
     }
     return samples;
   }
 
   private parseInstructrions(lines: string[]): number[][] {
-    return lines.map(line => line.split(' ').map(n => parseInt(n.trim(), 10)));
+    return lines.map(line => line.split(' ').map(n => parseInt(n.trim())));
   }
 
   private getMatchingOperations(samples: ISample[]): Map<ISample, string[]> {

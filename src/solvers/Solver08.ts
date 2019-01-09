@@ -9,7 +9,7 @@ interface INode {
 export default class Solver8 extends BaseSolver<number[]> {
   protected filePath: string = '8org.txt';
 
-  protected solvePart1(input: number[]): string {
+  protected solvePart1(input: number[]): number {
     const tree = this.buildTree(input);
 
     let metadataSum = 0;
@@ -20,16 +20,16 @@ export default class Solver8 extends BaseSolver<number[]> {
       queue.push(...currentNode.childNodes);
     }
 
-    return metadataSum.toString();
+    return metadataSum;
   }
 
-  protected solvePart2(input: number[]): string {
+  protected solvePart2(input: number[]): number {
     const tree = this.buildTree(input);
-    return tree.value.toString();
+    return tree.value;
   }
 
   protected parseInput(textInput: string): number[] {
-    return textInput.split(' ').map(t => parseInt(t.trim(), 10));
+    return textInput.split(' ').map(t => parseInt(t.trim()));
   }
 
   private buildTree(data: number[]): INode {

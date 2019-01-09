@@ -28,7 +28,7 @@ const NARROW = 2;
 export default class Solver22 extends BaseSolver<{ depth: number; targetX: number; targetY: number }> {
   protected filePath = '22.txt';
 
-  protected solvePart1({ depth, targetX, targetY }: { depth: number; targetX: number; targetY: number }): string {
+  protected solvePart1({ depth, targetX, targetY }: { depth: number; targetX: number; targetY: number }): number {
     const caveSystem = this.createMap(depth, targetX, targetY);
     let riskLevel = 0;
     for (let y = 0; y <= targetY; y++) {
@@ -37,10 +37,10 @@ export default class Solver22 extends BaseSolver<{ depth: number; targetX: numbe
       }
     }
 
-    return riskLevel.toString();
+    return riskLevel;
   }
 
-  protected solvePart2({ depth, targetX, targetY }: { depth: number; targetX: number; targetY: number }): string {
+  protected solvePart2({ depth, targetX, targetY }: { depth: number; targetX: number; targetY: number }): number {
     const caveSystem = this.createMap(depth, targetX, targetY);
     const queue = new PriorityQueue<INode>(node => node.distance);
     const graph: INode[][][] = new Array(caveSystem.length);
@@ -151,8 +151,7 @@ export default class Solver22 extends BaseSolver<{ depth: number; targetX: numbe
 
     return graph[targetY][targetX]
       .map(toolDist => toolDist.distance + (toolDist.tool === TORCH ? 0 : 7))
-      .reduce((prev, curr) => Math.min(prev, curr), Infinity)
-      .toString();
+      .reduce((prev, curr) => Math.min(prev, curr), Infinity);
   }
 
   protected parseInput(textInput: string): { depth: number; targetX: number; targetY: number } {
@@ -166,8 +165,7 @@ export default class Solver22 extends BaseSolver<{ depth: number; targetX: numbe
           line
             .split(' ')
             .pop()!
-            .trim(),
-          10
+            .trim()
         );
       } else if (lineIndex === 1) {
         line
@@ -177,9 +175,9 @@ export default class Solver22 extends BaseSolver<{ depth: number; targetX: numbe
           .split(',')
           .forEach((coord, coordIndex) => {
             if (coordIndex === 0) {
-              targetX = parseInt(coord, 10);
+              targetX = parseInt(coord);
             } else {
-              targetY = parseInt(coord, 10);
+              targetY = parseInt(coord);
             }
           });
       }

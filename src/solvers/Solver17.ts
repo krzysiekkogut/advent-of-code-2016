@@ -17,7 +17,7 @@ interface IMap {
 export default class Solver17 extends BaseSolver<IRange[]> {
   protected filePath = '17.txt';
 
-  protected solvePart1(input: IRange[]): string {
+  protected solvePart1(input: IRange[]): number {
     const map = this.createMap(input);
 
     this.flow(
@@ -29,11 +29,10 @@ export default class Solver17 extends BaseSolver<IRange[]> {
     return map.data
       .filter((_, index) => index >= map.minY)
       .reduce((prev, curr) => prev.concat(curr), [])
-      .filter(s => s === '~' || s === '|')
-      .length.toString();
+      .filter(s => s === '~' || s === '|').length;
   }
 
-  protected solvePart2(input: IRange[]): string {
+  protected solvePart2(input: IRange[]): number {
     const map = this.createMap(input);
 
     this.flow(
@@ -45,20 +44,19 @@ export default class Solver17 extends BaseSolver<IRange[]> {
     return map.data
       .filter((_, index) => index >= map.minY)
       .reduce((prev, curr) => prev.concat(curr), [])
-      .filter(s => s === '~')
-      .length.toString();
+      .filter(s => s === '~').length;
   }
 
   protected parseInput(textInput: string): IRange[] {
     return textInput.split(EOL).map(line => {
-      const [_, primaryCoordName, primaryCoordText, secondaryCoordStartText, secondaryCoordEndText] = line.match(
+      const [_, primaryCoordName, primaryCoord, secondaryCoordStart, secondaryCoordEnd] = line.match(
         /(x|y)=([-\d]+), [xy]=([-\d]+)\.\.([-\d]+)/
       )!;
       return {
         isRow: primaryCoordName === 'y',
-        primaryCoord: parseInt(primaryCoordText, 10),
-        secondaryCoordEnd: parseInt(secondaryCoordEndText, 10),
-        secondaryCoordStart: parseInt(secondaryCoordStartText, 10),
+        primaryCoord: parseInt(primaryCoord),
+        secondaryCoordEnd: parseInt(secondaryCoordEnd),
+        secondaryCoordStart: parseInt(secondaryCoordStart),
       } as IRange;
     });
   }

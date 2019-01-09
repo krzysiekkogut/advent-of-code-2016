@@ -1,10 +1,10 @@
 import { EOL } from 'os';
 import BaseSolver from './BaseSolver';
 
-export default class Solver2 extends BaseSolver<string[]> {
+export default class Solver2 extends BaseSolver<string[], number, string> {
   protected filePath: string = '2.txt';
 
-  protected solvePart1(input: string[]): string {
+  protected solvePart1(input: string[]): number {
     let twos = 0;
     let threes = 0;
     input.forEach(code => {
@@ -13,7 +13,7 @@ export default class Solver2 extends BaseSolver<string[]> {
       threes += hasThree ? 1 : 0;
     });
 
-    return (twos * threes).toString();
+    return twos * threes;
   }
 
   protected solvePart2(input: string[]): string {

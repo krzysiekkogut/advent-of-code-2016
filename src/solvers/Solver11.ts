@@ -1,6 +1,6 @@
 import BaseSolver from './BaseSolver';
 
-export default class Solver11 extends BaseSolver<number> {
+export default class Solver11 extends BaseSolver<number, string> {
   protected filePath: string = '11.txt';
 
   private GRID_SIZE = 300;
@@ -43,7 +43,7 @@ export default class Solver11 extends BaseSolver<number> {
   }
 
   protected parseInput(textInput: string): number {
-    return parseInt(textInput, 10);
+    return parseInt(textInput);
   }
 
   private createGrid(serialNumber: number): { grid: number[][]; summedGrid: number[][] } {
@@ -83,11 +83,6 @@ export default class Solver11 extends BaseSolver<number> {
     bottom: number,
     right: number
   ): number {
-    return (
-      summedGrid[bottom][right] -
-      summedGrid[bottom][left] -
-      summedGrid[top][right] +
-      summedGrid[top][left]
-    );
+    return summedGrid[bottom][right] - summedGrid[bottom][left] - summedGrid[top][right] + summedGrid[top][left];
   }
 }

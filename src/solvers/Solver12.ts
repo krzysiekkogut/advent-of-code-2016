@@ -4,7 +4,7 @@ import BaseSolver from './BaseSolver';
 export default class Solver12 extends BaseSolver<{ initialState: string[]; rules: Map<string, string> }> {
   protected filePath: string = '12.txt';
 
-  protected solvePart1({ initialState, rules }: { initialState: string[]; rules: Map<string, string> }): string {
+  protected solvePart1({ initialState, rules }: { initialState: string[]; rules: Map<string, string> }): number {
     const GENERATIONS = 20;
     const OFFSET = 1000;
 
@@ -16,10 +16,10 @@ export default class Solver12 extends BaseSolver<{ initialState: string[]; rules
       currentState = this.nextGeneration(currentState, rules);
     }
 
-    return this.sumPots(currentState, OFFSET).toString();
+    return this.sumPots(currentState, OFFSET);
   }
 
-  protected solvePart2({ initialState, rules }: { initialState: string[]; rules: Map<string, string> }): string {
+  protected solvePart2({ initialState, rules }: { initialState: string[]; rules: Map<string, string> }): number {
     const GENERATIONS = 50000000000;
     const OFFSET = 1000;
 
@@ -38,7 +38,7 @@ export default class Solver12 extends BaseSolver<{ initialState: string[]; rules
     const count = currentState.filter(p => p === '#').length;
     const result = sum + (GENERATIONS - g) * count;
 
-    return result.toString();
+    return result;
   }
 
   protected parseInput(textInput: string): { initialState: string[]; rules: Map<string, string> } {

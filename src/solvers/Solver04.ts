@@ -12,7 +12,7 @@ interface ILog {
 export default class Solver4 extends BaseSolver<ILog[]> {
   protected filePath: string = '4.txt';
 
-  protected solvePart1(input: ILog[]): string {
+  protected solvePart1(input: ILog[]): number {
     const minutesSleepMap = new Map<number, Map<number, number>>();
     input.forEach((logEntry, index) => {
       if (logEntry.action === 'falls asleep') {
@@ -48,10 +48,10 @@ export default class Solver4 extends BaseSolver<ILog[]> {
       }
     });
 
-    return (max.minute * max.guardId).toString();
+    return max.minute * max.guardId;
   }
 
-  protected solvePart2(input: ILog[]): string {
+  protected solvePart2(input: ILog[]): number {
     const minutesSleepMap = new Map<number, Map<number, number>>();
     input.forEach((logEntry, index) => {
       if (logEntry.action === 'falls asleep') {
@@ -80,7 +80,7 @@ export default class Solver4 extends BaseSolver<ILog[]> {
       });
     });
 
-    return (mostFrequentMinute * mostFrequentGuardId).toString();
+    return mostFrequentMinute * mostFrequentGuardId;
   }
 
   protected parseInput(textInput: string): ILog[] {
@@ -94,15 +94,13 @@ export default class Solver4 extends BaseSolver<ILog[]> {
     for (const inputLine of inputLines) {
       const startShiftMatch = inputLine.match(startShiftRegExp);
       if (startShiftMatch) {
-        currentGuardId = parseInt(startShiftMatch[2], 10);
+        currentGuardId = parseInt(startShiftMatch[2]);
       } else {
-        const wakeSleepMatch = inputLine.match(wakeSleepRegExp)!;
+        const [_, date, action] = inputLine.match(wakeSleepRegExp)!;
         log.push({
-          // tslint:disable:object-literal-sort-keys
+          action: action as GuardAction,
+          date: new Date(date),
           guardId: currentGuardId,
-          date: new Date(wakeSleepMatch[1]),
-          action: wakeSleepMatch[2] as GuardAction,
-          // tslint:enable:object-literal-sort-keys
         });
       }
     }

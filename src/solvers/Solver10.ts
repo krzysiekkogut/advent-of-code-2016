@@ -11,7 +11,7 @@ interface IPoint {
   velocity: ICoords;
 }
 
-export default class Solver10 extends BaseSolver<IPoint[]> {
+export default class Solver10 extends BaseSolver<IPoint[], string> {
   protected filePath: string = '10.txt';
 
   protected solvePart1(input: IPoint[]): string {
@@ -59,18 +59,19 @@ export default class Solver10 extends BaseSolver<IPoint[]> {
 
   protected parseInput(textInput: string): IPoint[] {
     return textInput.split(EOL).map(line => {
-      const [_, positionX, positionY, velocityX, velocityY] = line.match(
-        /position=<\s*([\d-]+),\s*([\d-]+)> velocity=<\s*([\d-]+),\s*([\d-]+)>/
-      )!;
+      const [positionX, positionY, velocityX, velocityY] = line
+        .match(/position=<\s*([\d-]+),\s*([\d-]+)> velocity=<\s*([\d-]+),\s*([\d-]+)>/)!
+        .slice(1)
+        .map(n => parseInt(n.trim()));
 
       return {
         position: {
-          x: parseInt(positionX.trim(), 10),
-          y: parseInt(positionY.trim(), 10),
+          x: positionX,
+          y: positionY,
         },
         velocity: {
-          x: parseInt(velocityX.trim(), 10),
-          y: parseInt(velocityY.trim(), 10),
+          x: velocityX,
+          y: velocityY,
         },
       };
     });

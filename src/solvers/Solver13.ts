@@ -23,7 +23,7 @@ interface IMap {
   carts: ICart[];
 }
 
-export default class Solver13 extends BaseSolver<IMap> {
+export default class Solver13 extends BaseSolver<IMap, string> {
   protected filePath: string = '13.txt';
 
   protected solvePart1(input: IMap): string {
@@ -48,7 +48,7 @@ export default class Solver13 extends BaseSolver<IMap> {
   }
 
   protected parseInput(textInput: string): IMap {
-    const lines = textInput.split(EOL).filter(line => line !== '');
+    const lines = textInput.split(EOL).filter(l => !!l);
     const tracks = new Array<ITrack[]>(lines.length);
     const carts: ICart[] = [];
     let cart: ICart;
