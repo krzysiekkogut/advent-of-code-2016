@@ -4,17 +4,18 @@ import Decrease from './assembunny/Decrease';
 import Increase from './assembunny/Increase';
 import JumpNonZero from './assembunny/JumpNonZero';
 import Operation from './assembunny/Operation';
+import Toggle from './assembunny/Toggle';
 import BaseSolver from './BaseSolver';
 
-export default class Solver12 extends BaseSolver<Operation[]> {
-  protected filePath = '12.txt';
+export default class Solver23 extends BaseSolver<Operation[]> {
+  protected filePath = '23.txt';
 
   protected solvePart1(_: Operation[]): number {
-    return this.runProgram(0);
+    return this.runProgram(7);
   }
 
   protected solvePart2(_: Operation[]): number {
-    return this.runProgram(1);
+    return this.runProgram(12);
   }
 
   protected parseInput(textInput: string): Operation[] {
@@ -31,23 +32,20 @@ export default class Solver12 extends BaseSolver<Operation[]> {
           case 'dec':
             return new Decrease(lineSplit[1]);
           case 'jnz':
-          default:
             return new JumpNonZero(lineSplit[1], lineSplit[2]);
+          case 'tgl':
+          default:
+            return new Toggle(lineSplit[1]);
         }
       });
   }
 
-  private runProgram(c: number): number {
-    let a = 1;
-    let b = 1;
-    const d = c !== 0 ? 33 : 26;
-
-    for (let i = 0; i < d; i++) {
-      c = a;
-      a += b;
-      b = c;
+  private runProgram(a: number): number {
+    let result = 1;
+    for (let i = 2; i <= a; i++) {
+      result *= i;
     }
 
-    return a + 182;
+    return result + 72 * 77;
   }
 }
