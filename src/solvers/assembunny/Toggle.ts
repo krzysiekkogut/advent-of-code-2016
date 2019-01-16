@@ -2,7 +2,7 @@ import Copy from './Copy';
 import Decrease from './Decrease';
 import Increase from './Increase';
 import JumpNonZero from './JumpNonZero';
-import Operation from './Operation';
+import Operation, { IOperationResult } from './Operation';
 
 export default class Toggle extends Operation {
   public static id = 'tgl';
@@ -14,7 +14,7 @@ export default class Toggle extends Operation {
     this.args = [offset];
   }
 
-  public calc(registers: number[], operations: Operation[], currentInstructionPointer: number): number {
+  public calc(registers: number[], operations: Operation[], currentInstructionPointer: number): IOperationResult {
     const offsetNumber = parseInt(this.offset);
     const offset = isNaN(offsetNumber) ? registers[this.getRegisterNumber(this.offset)] : offsetNumber;
 
@@ -43,6 +43,6 @@ export default class Toggle extends Operation {
       }
     }
 
-    return 1;
+    return { instructionPointerMove: 1, message: '' };
   }
 }

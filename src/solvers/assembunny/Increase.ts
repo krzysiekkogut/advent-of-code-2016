@@ -1,4 +1,4 @@
-import Operation from './Operation';
+import Operation, { IOperationResult } from './Operation';
 
 export default class Increase extends Operation {
   public static id = 'inc';
@@ -10,10 +10,11 @@ export default class Increase extends Operation {
     this.args = [register];
   }
 
-  public calc(registers: number[]): number {
+  public calc(registers: number[]): IOperationResult {
     if (isNaN(parseInt(this.register))) {
       registers[this.getRegisterNumber(this.register)]++;
     }
-    return 1;
+
+    return { instructionPointerMove: 1, message: '' };
   }
 }

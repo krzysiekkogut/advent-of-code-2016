@@ -1,4 +1,4 @@
-import Operation from './Operation';
+import Operation, { IOperationResult } from './Operation';
 
 export default class JumpNonZero extends Operation {
   public static id = 'jnz';
@@ -10,7 +10,7 @@ export default class JumpNonZero extends Operation {
     this.args = [testValue, instructionPointer];
   }
 
-  public calc(registers: number[]): number {
+  public calc(registers: number[]): IOperationResult {
     const testValueNumber = parseInt(this.testValue);
     const testValue = isNaN(testValueNumber) ? registers[this.getRegisterNumber(this.testValue)] : testValueNumber;
 
@@ -19,6 +19,6 @@ export default class JumpNonZero extends Operation {
       ? registers[this.getRegisterNumber(this.instructionPointer)]
       : instructionPointerNumber;
 
-    return testValue !== 0 ? instructionPointer : 1;
+    return { instructionPointerMove: testValue !== 0 ? instructionPointer : 1, message: '' };
   }
 }

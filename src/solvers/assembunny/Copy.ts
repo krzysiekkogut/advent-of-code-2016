@@ -1,4 +1,4 @@
-import Operation from './Operation';
+import Operation, { IOperationResult } from './Operation';
 
 export default class Copy extends Operation {
   public static id = 'copy';
@@ -10,13 +10,13 @@ export default class Copy extends Operation {
     this.args = [from, to];
   }
 
-  public calc(registers: number[]): number {
+  public calc(registers: number[]): IOperationResult {
     if (isNaN(parseInt(this.to))) {
       const fromValue = parseInt(this.from);
       registers[this.getRegisterNumber(this.to)] = isNaN(fromValue)
         ? registers[this.getRegisterNumber(this.from)]
         : fromValue;
     }
-    return 1;
+    return { instructionPointerMove: 1, message: '' };
   }
 }
